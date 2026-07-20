@@ -1,0 +1,1 @@
+# SalesOS AI — Middleware module

@@ -1,0 +1,74 @@
+# ============================================================
+# SalesOS AI — Monorepo .gitignore
+# ============================================================
+
+# --- Python & Virtual Environments ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+*.whl
+.venv/
+venv/
+env/
+ENV/
+*.venv
+salesos_ai.egg-info/
+
+# --- Node.js & Next.js (Frontend) ---
+node_modules/
+.next/
+out/
+.turbo/
+.vercel/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# --- Environment & Secrets ---
+.env
+.env.*
+!.env.example
+!.env*.example
+*.pem
+*.key
+*.crt
+
+# --- Databases & Volumes ---
+*.db
+*.sqlite
+*.sqlite3
+docker/volumes/
+volumes/
+
+# --- Testing & Caches ---
+.coverage
+htmlcov/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+coverage/
+
+# --- IDE & OS ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Logs ---
+*.log
+logs/
+
+# --- Miscellaneous ---
+*.tsbuildinfo
+
