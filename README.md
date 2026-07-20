@@ -15,16 +15,30 @@
 
 The goal of **SalesOS AI** is to replace fragmented sales tools and manual data entry with an **intelligent, self-operating sales system**.
 
+```mermaid
+flowchart TD
+    Inbound["📥 Inbound Leads<br/>(Web Forms, APIs, Webhooks)"]
+
+    subgraph Engine ["🤖 SalesOS AI Autonomous Engine"]
+        direction TB
+        Enrich["🔍 1. Lead Enrichment Agent<br/>(Scrapes Firmographics & Signals)"]
+        Qualify["📊 2. Lead Qualification Agent<br/>(Calculates BANT & ICP Fit Score)"]
+        Outreach["✉️ 3. Outreach Agent<br/>(Personalized Email Sequences)"]
+        Booking["📅 4. Booking Agent<br/>(Real-time Calendar & Demo Booking)"]
+        Intel["💡 5. Conversation Intelligence<br/>(Sentiment & Intent Analysis)"]
+
+        Enrich --> Qualify
+        Qualify --> Outreach
+        Outreach --> Booking
+        Booking --> Intel
+    end
+
+    Outbound["🎉 Booked Demos & Closed Deals"]
+
+    Inbound --> Engine
+    Engine --> Outbound
 ```
-                           ┌────────────────────────────────────────────────────────┐
-                           │                     SalesOS AI                         │
-                           └────────────────────────────────────────────────────────┘
-                                                       │
-  ┌─────────────────┐       ┌──────────────────────────┴──────────────────────────┐       ┌─────────────────┐
-  │  Inbound Leads  │ ───►  │                  Autonomous Engine                  │ ───►  │  Booked Demos   │
-  │ (Forms, APIs)   │       │  Enrich ──► Qualify ──► Outreach ──► Book Meeting   │       │  & Closed Deals │
-  └─────────────────┘       └─────────────────────────────────────────────────────┘       └─────────────────┘
-```
+
 
 ### 🧠 Core Autonomous AI Agents
 
@@ -63,26 +77,48 @@ The goal of **SalesOS AI** is to replace fragmented sales tools and manual data 
 
 ## 🏗️ Technical Architecture
 
-```
-┌──────────────────────────────────────────────────────────────────────────────────┐
-│                             Frontend (Next.js 15 / React 19)                             │
-│       Dashboard  │  Leads & CRM  │  Conversations  │  Meetings  │  AI Control Center   │
-└────────────────────────────────────────┬─────────────────────────────────────────┘
-                                         │ REST API / WebSockets
-┌────────────────────────────────────────▼─────────────────────────────────────────┐
-│                              Backend Gateway (FastAPI)                            │
-│           Auth & Security  │  Route Handlers  │  Pydantic V2 Schemas                 │
-└──────┬─────────────────────────────────┬──────────────────────────────────┬──────┘
-       │                                 │                                  │
-┌──────▼─────────────────┐     ┌─────────▼─────────────────┐     ┌──────────▼───────────┐
-│   Workflow Engine      │     │    Multi-Agent System     │     │   Background Tasks   │
-│ (State Machine/Events) │ ──► │  (Enrich/Qualify/Book)    │ ◄── │  (Celery + Workers)  │
-└──────┬─────────────────┘     └─────────┬─────────────────┘     └──────────┬───────────┘
-       │                                 │                                  │
-┌──────▼─────────────────────────────────▼──────────────────────────────────▼───────┐
-│                                   Data & Storage                                 │
-│    PostgreSQL 17 (ORM)   │   Redis 7 (Cache/Events)   │   Qdrant (Vector RAG)     │
-└──────────────────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph Client ["💻 Client Layer (Frontend)"]
+        UI["Next.js 15 + React 19 Workspace<br/>(Dashboard, CRM, Conversations, Meetings, AI Control Center)"]
+    end
+
+    subgraph Gateway ["⚡ API Gateway Layer (FastAPI)"]
+        API["FastAPI App Gateway"]
+        Auth["JWT Auth & Security"]
+        Router["Pydantic V2 Route Handlers"]
+
+        API --> Auth
+        Auth --> Router
+    end
+
+    subgraph Core ["🧠 Core Execution Engine"]
+        Workflow["🔄 Workflow State Machine"]
+        Agents["🤖 LangGraph Multi-Agent Core<br/>(Enrichment, Qualification, Outreach, Booking)"]
+        Decisions["⚙️ Decision & Rep Routing Engine"]
+
+        Workflow <--> Decisions
+        Decisions <--> Agents
+    end
+
+    subgraph Async ["📡 Async Queue & Event System"]
+        RedisBus["📡 Redis 7 Event Bus"]
+        CeleryWorker["⚙️ Celery Distributed Task Workers"]
+
+        RedisBus <--> CeleryWorker
+    end
+
+    subgraph Storage ["🗄️ Persistence & Intelligence Layer"]
+        Postgres[("🐘 PostgreSQL 17<br/>(SQLAlchemy 2 ORM)")]
+        Qdrant[("🔍 Qdrant Vector Database<br/>(RAG Embeddings & Context)")]
+        LLM["🤖 Multi-LLM Layer<br/>(Gemini 2.0 / OpenAI / Claude)"]
+    end
+
+    UI -->|"REST API / WebSockets"| Gateway
+    Router --> Core
+    Core --> Async
+    Core --> Storage
+    Agents --> LLM
 ```
 
 ---
