@@ -7,6 +7,11 @@ All notable changes, architectural decisions, and milestone completions for Sale
 ## [Unreleased] — Milestone 6 Development
 
 ### Added
+- **Task 6.2 (MCP Tool Providers Implementation)**:
+  - Implemented `SalesOSCompanyResearchProvider` in `app/agents/tools/company_research.py` conforming strictly to `CompanyResearchToolProvider` (firmographic & technographic research synthesis, zero lead scoring/qualification logic).
+  - Implemented `SalesOSCalendarProvider` in `app/agents/tools/calendar.py` conforming strictly to `CalendarToolProvider` (pure slot calculation & meeting CRUD, zero working hours policy logic).
+  - Added `capabilities()` declaration to `CompanyResearchToolProvider` interface.
+  - Registered `SalesOSCompanyResearchProvider` and `SalesOSCalendarProvider` in `app/main.py` lifespan startup.
 - **Task 6.1 (Qdrant Vector Memory Integration)**:
   - Created `app/db/qdrant.py` AsyncQdrantClient lifecycle manager and collection setup validator.
   - Implemented `QdrantKnowledgeBaseProvider` in `app/agents/tools/qdrant_kb.py` conforming strictly to `KnowledgeBaseToolProvider`.

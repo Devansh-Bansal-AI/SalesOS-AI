@@ -28,12 +28,12 @@
    - Implemented `QdrantKnowledgeBaseProvider` in `app/agents/tools/qdrant_kb.py`.
    - Registered provider in `app/main.py` lifespan startup.
 
-2. 🟡 **Task 6.2 — Company Research & Calendar Tool Providers** — `[IN PROGRESS / NEXT]`
-   - Create `CompanyResearchToolProvider` implementation (`app/agents/tools/company_research.py`).
-   - Create `CalendarToolProvider` implementation (`app/agents/tools/calendar.py`).
-   - Register both providers in `app/main.py`.
+2. 🟢 **Task 6.2 — Company Research & Calendar Tool Providers** — `[COMPLETED]`
+   - Implemented `SalesOSCompanyResearchProvider` in `app/agents/tools/company_research.py`.
+   - Implemented `SalesOSCalendarProvider` in `app/agents/tools/calendar.py`.
+   - Registered both providers in `app/main.py` lifespan startup.
 
-3. ⚪ **Task 6.3 — Analytics API Endpoint**
+3. 🟡 **Task 6.3 — Analytics API Endpoint** — `[IN PROGRESS / NEXT]`
    - Create `app/api/v1/analytics.py` backing the Next.js workspace analytics page.
    - Register `analytics_router` in `app/api/v1/router.py`.
 
