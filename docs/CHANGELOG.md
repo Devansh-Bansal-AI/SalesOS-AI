@@ -7,6 +7,12 @@ All notable changes, architectural decisions, and milestone completions for Sale
 ## [Unreleased] — Milestone 6 Development
 
 ### Added
+- **Task 6.1 (Qdrant Vector Memory Integration)**:
+  - Created `app/db/qdrant.py` AsyncQdrantClient lifecycle manager and collection setup validator.
+  - Implemented `QdrantKnowledgeBaseProvider` in `app/agents/tools/qdrant_kb.py` conforming strictly to `KnowledgeBaseToolProvider`.
+  - Added support for configurable collection names (`salesos_knowledge_base`, `conversation_memory`, etc.).
+  - Added rich standardized vector payload metadata (`organization_id`, `lead_id`, `conversation_id`, `message_id`, `agent`, `timestamp`, `embedding_version`, `source`).
+  - Registered `QdrantKnowledgeBaseProvider` in `app/main.py` lifespan startup and shutdown hooks.
 - Created comprehensive documentation suite in `docs/`:
   - `PROJECT_RECOVERY.md` (Architecture freeze & recovery audit)
   - `CURRENT_STATUS.md` (Active development status)

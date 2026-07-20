@@ -23,21 +23,21 @@
 
 ## 🎯 Current Objectives (Milestone 6)
 
-1. 🟢 **Task 6.1 — Qdrant Vector Client & Knowledge Base Provider**
-   - Create `app/db/qdrant.py` async client wrapper.
-   - Implement `QdrantKnowledgeBaseProvider` in `app/agents/tools/qdrant_kb.py`.
-   - Register provider in `app/main.py` lifespan startup.
+1. 🟢 **Task 6.1 — Qdrant Vector Client & Knowledge Base Provider** — `[COMPLETED]`
+   - Created `app/db/qdrant.py` async client wrapper.
+   - Implemented `QdrantKnowledgeBaseProvider` in `app/agents/tools/qdrant_kb.py`.
+   - Registered provider in `app/main.py` lifespan startup.
 
-2. 🟡 **Task 6.2 — Company Research & Calendar Tool Providers**
+2. 🟡 **Task 6.2 — Company Research & Calendar Tool Providers** — `[IN PROGRESS / NEXT]`
    - Create `CompanyResearchToolProvider` implementation (`app/agents/tools/company_research.py`).
    - Create `CalendarToolProvider` implementation (`app/agents/tools/calendar.py`).
    - Register both providers in `app/main.py`.
 
-3. 🟡 **Task 6.3 — Analytics API Endpoint**
+3. ⚪ **Task 6.3 — Analytics API Endpoint**
    - Create `app/api/v1/analytics.py` backing the Next.js workspace analytics page.
    - Register `analytics_router` in `app/api/v1/router.py`.
 
-4. 🟡 **Task 6.4 — Pytest Test Suite Population**
+4. ⚪ **Task 6.4 — Pytest Test Suite Population**
    - Populate `tests/unit` (agents, decision engine, state machine, services).
    - Populate `tests/integration` (FastAPI routes & workflow execution).
 
