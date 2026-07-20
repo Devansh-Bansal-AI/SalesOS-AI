@@ -7,6 +7,10 @@ All notable changes, architectural decisions, and milestone completions for Sale
 ## [Unreleased] — Milestone 6 Development
 
 ### Added
+- **Task 6.4 (Unit & Integration Test Suite Population)**:
+  - Populated layer-organized unit and integration test suite (`tests/unit/services`, `tests/unit/registries`, `tests/unit/events`, `tests/unit/providers`, `tests/integration/api`, `tests/integration/workflows`).
+  - Implemented 18 test cases with 100% pass rate.
+  - Consolidated MCP tool interfaces into `app/agents/tools` package.
 - **Task 6.3 (Domain-Focused Analytics REST API Router)**:
   - Created `app/schemas/analytics.py` explicit Pydantic response models (`AnalyticsOverviewResponse`, `PipelineAnalyticsResponse`, `AgentAnalyticsResponse`, `SLAAnalyticsResponse`).
   - Extended `DashboardService` with domain analytics methods (`get_analytics_overview`, `get_pipeline_analytics`, `get_agent_analytics`, `get_sla_analytics`).
