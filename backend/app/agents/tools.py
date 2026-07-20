@@ -204,13 +204,17 @@ class KnowledgeBaseToolProvider(ABC):
         organization_id: str | None = None,
         namespace: str | None = None,
         limit: int | None = None,
+        collection_name: str | None = None,
     ) -> list[dict[str, Any]]:
         """Semantic search over the knowledge base."""
         ...
 
     @abstractmethod
     async def get_similar_conversations(
-        self, text: str, top_k: int = 3
+        self,
+        text: str,
+        top_k: int = 3,
+        collection_name: str | None = None,
     ) -> list[dict[str, Any]]:
         """Find similar past conversations."""
         ...
@@ -221,9 +225,20 @@ class KnowledgeBaseToolProvider(ABC):
         text: str,
         namespace: str | None = None,
         metadata: dict[str, Any] | None = None,
+        collection_name: str | None = None,
     ) -> None:
         """Store a text entry in the knowledge base."""
         ...
+
+    @abstractmethod
+    async def delete(
+        self,
+        point_id: str,
+        collection_name: str | None = None,
+    ) -> bool:
+        """Delete a vector entry by ID from the knowledge base."""
+        ...
+
 
 
 # ── Tool Registry ──────────────────────────────────────────

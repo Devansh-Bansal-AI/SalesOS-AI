@@ -64,10 +64,14 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     registry = get_registry()
     registry.register_email("smtp", SMTPProvider(), default=True)
 
-    # Register Postgres CRM Tool Provider
+    # Register Postgres CRM Tool Provider & Qdrant Knowledge Base Provider
     from app.agents.tools import get_tool_registry
     from app.agents.tools.postgres_crm import PostgresCRMProvider
-    get_tool_registry().register_crm(PostgresCRMProvider())
+    from app.agents.tools.qdrant_kb import QdrantKnowledgeBaseProvider
+
+    tool_registry = get_tool_registry()
+    tool_registry.register_crm(PostgresCRMProvider())
+    tool_registry.register_knowledge_base(QdrantKnowledgeBaseProvider())
 
     # Register all AI agents (plugin registry)
     from app.agents.registry import register_all_agents
@@ -85,8 +89,10 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
     # Shutdown
     logger.info("application_shutting_down")
+    from app.db.qdrant import close_qdrant_client
     await close_db()
     await close_redis()
+    await close_qdrant_client()
     logger.info("application_stopped")
 
 
