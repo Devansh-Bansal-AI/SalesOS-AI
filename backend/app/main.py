@@ -64,14 +64,18 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     registry = get_registry()
     registry.register_email("smtp", SMTPProvider(), default=True)
 
-    # Register Postgres CRM Tool Provider & Qdrant Knowledge Base Provider
+    # Register MCP Tool Providers (CRM, KnowledgeBase, CompanyResearch, Calendar)
     from app.agents.tools import get_tool_registry
+    from app.agents.tools.calendar import SalesOSCalendarProvider
+    from app.agents.tools.company_research import SalesOSCompanyResearchProvider
     from app.agents.tools.postgres_crm import PostgresCRMProvider
     from app.agents.tools.qdrant_kb import QdrantKnowledgeBaseProvider
 
     tool_registry = get_tool_registry()
     tool_registry.register_crm(PostgresCRMProvider())
     tool_registry.register_knowledge_base(QdrantKnowledgeBaseProvider())
+    tool_registry.register_company_research(SalesOSCompanyResearchProvider())
+    tool_registry.register_calendar(SalesOSCalendarProvider())
 
     # Register all AI agents (plugin registry)
     from app.agents.registry import register_all_agents

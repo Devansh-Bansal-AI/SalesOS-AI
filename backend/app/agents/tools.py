@@ -94,6 +94,16 @@ class CompanyResearchToolProvider(ABC):
         """Detect technology stack from a domain."""
         ...
 
+    def capabilities(self) -> dict[str, bool]:
+        """Return provider capabilities (e.g. firmographics, technographics, revenue)."""
+        return {
+            "firmographics": True,
+            "technographics": True,
+            "revenue": True,
+            "employees": True,
+        }
+
+
 
 # ── Calendar Tool Provider ──────────────────────────────────
 
