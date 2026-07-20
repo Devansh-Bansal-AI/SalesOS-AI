@@ -1,13 +1,9 @@
 # ============================================================
-# SalesOS AI — MCP Tool Providers
+# SalesOS AI — MCP Tool Providers Package
 #
 # Agent tools are formalized as typed interfaces.
 # Each agent declares which tool providers it needs.
-# Tool providers are injected, not imported.
-#
-# This keeps agents independent from implementation details.
-# The CRM MCP doesn't know if data comes from PostgreSQL,
-# HubSpot, or Salesforce.
+# Tool providers are injected via ToolRegistry, not imported directly.
 # ============================================================
 
 import contextvars
@@ -102,7 +98,6 @@ class CompanyResearchToolProvider(ABC):
             "revenue": True,
             "employees": True,
         }
-
 
 
 # ── Calendar Tool Provider ──────────────────────────────────
@@ -250,22 +245,11 @@ class KnowledgeBaseToolProvider(ABC):
         ...
 
 
-
 # ── Tool Registry ──────────────────────────────────────────
 
 
 class ToolRegistry:
-    """Central registry for MCP tool providers.
-
-    Usage:
-        registry = ToolRegistry()
-        registry.register_crm(PostgresCRMProvider(session))
-        registry.register_company_research(WebSearchProvider())
-
-        # Agents get their tools from the registry
-        crm = registry.get_crm()
-        company = registry.get_company_research()
-    """
+    """Central registry for MCP tool providers."""
 
     def __init__(self) -> None:
         self._crm: CRMToolProvider | None = None
