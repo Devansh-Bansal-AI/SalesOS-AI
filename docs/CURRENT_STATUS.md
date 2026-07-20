@@ -33,11 +33,13 @@
    - Implemented `SalesOSCalendarProvider` in `app/agents/tools/calendar.py`.
    - Registered both providers in `app/main.py` lifespan startup.
 
-3. 🟡 **Task 6.3 — Analytics API Endpoint** — `[IN PROGRESS / NEXT]`
-   - Create `app/api/v1/analytics.py` backing the Next.js workspace analytics page.
-   - Register `analytics_router` in `app/api/v1/router.py`.
+3. 🟢 **Task 6.3 — Analytics API Endpoint** — `[COMPLETED]`
+   - Created `app/schemas/analytics.py` typed Pydantic response models.
+   - Extended `DashboardService` with domain analytics methods (`get_analytics_overview`, `get_pipeline_analytics`, `get_agent_analytics`, `get_sla_analytics`).
+   - Implemented thin REST API router `app/api/v1/analytics.py` with time-range filtering (`?days=30`).
+   - Registered `analytics_router` in `app/api/v1/router.py`.
 
-4. ⚪ **Task 6.4 — Pytest Test Suite Population**
+4. 🟡 **Task 6.4 — Pytest Test Suite Population** — `[IN PROGRESS / NEXT]`
    - Populate `tests/unit` (agents, decision engine, state machine, services).
    - Populate `tests/integration` (FastAPI routes & workflow execution).
 

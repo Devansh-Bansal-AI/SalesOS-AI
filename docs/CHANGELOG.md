@@ -7,6 +7,13 @@ All notable changes, architectural decisions, and milestone completions for Sale
 ## [Unreleased] — Milestone 6 Development
 
 ### Added
+- **Task 6.3 (Domain-Focused Analytics REST API Router)**:
+  - Created `app/schemas/analytics.py` explicit Pydantic response models (`AnalyticsOverviewResponse`, `PipelineAnalyticsResponse`, `AgentAnalyticsResponse`, `SLAAnalyticsResponse`).
+  - Extended `DashboardService` with domain analytics methods (`get_analytics_overview`, `get_pipeline_analytics`, `get_agent_analytics`, `get_sla_analytics`).
+  - Implemented thin REST API router `app/api/v1/analytics.py` with endpoints (`/analytics/overview`, `/analytics/pipeline`, `/analytics/agents`, `/analytics/sla`).
+  - Added query time-range filtering (`?days=30`).
+  - Implemented generic agent metric reporting (`AgentMetricItem`) to support future agents dynamically without API schema changes.
+  - Registered `analytics_router` in `app/api/v1/router.py`.
 - **Task 6.2 (MCP Tool Providers Implementation)**:
   - Implemented `SalesOSCompanyResearchProvider` in `app/agents/tools/company_research.py` conforming strictly to `CompanyResearchToolProvider` (firmographic & technographic research synthesis, zero lead scoring/qualification logic).
   - Implemented `SalesOSCalendarProvider` in `app/agents/tools/calendar.py` conforming strictly to `CalendarToolProvider` (pure slot calculation & meeting CRUD, zero working hours policy logic).
