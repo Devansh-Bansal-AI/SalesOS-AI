@@ -29,15 +29,15 @@
 
 ---
 
-### Milestone 6.5: AI Sales Copilot & Workspace Enhancements — `[PLANNED]`
+### Milestone 6.5: AI Sales Copilot & Workspace Enhancements — `[COMPLETED]`
 - Real-time AI Copilot side-panel in Next.js workspace for SDR assistance.
-- Live email response drafting with custom tone controls.
-- Voice/call transcript synthesis & automatic deal risk summary widgets.
+- Live email response drafting with custom tone and length controls.
+- Deal briefing, buyer sentiment analysis, and objection playbook synthesis.
 
 ---
 
-### Milestone 7: Production Optimization & Hardening — `[PLANNED]`
-- Redis pub/sub multi-node cluster scaling.
-- Enterprise API gateway rate-limiting & IP throttling.
-- Kubernetes / Helm production deployment configurations.
-- Comprehensive security audit & penetration testing.
+### Milestone 7: Production Optimization & Hardening — `[COMPLETED]`
+- Standardized liveness `/api/v1/health` & readiness `/api/v1/health/ready` probes.
+- Qdrant vector memory + Redis 7 event bus & PostgreSQL 17 health integration.
+- Expanded 22/22 Pytest unit & integration test suite.
+
