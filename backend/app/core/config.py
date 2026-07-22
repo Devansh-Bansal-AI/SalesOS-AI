@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=(".env", "../.env"),
         env_file_encoding="utf-8",
         case_sensitive=False,
         extra="ignore",
@@ -60,9 +60,19 @@ class Settings(BaseSettings):
     POSTGRES_USER: str = "salesos"
     POSTGRES_PASSWORD: str = "salesos_dev_password"
     POSTGRES_DB: str = "salesos_ai"
+    OVERRIDE_DATABASE_URL: str | None = None
 
     @property
     def DATABASE_URL(self) -> str:
+        url = self.OVERRIDE_DATABASE_URL
+        if url:
+            if url.startswith("postgresql://"):
+                url = url.replace("postgresql://", "postgresql+asyncpg://", 1)
+            # Convert sslmode to ssl for asyncpg driver
+            url = url.replace("sslmode=require", "ssl=require").replace("sslmode=prefer", "ssl=prefer")
+            # Remove unsupported channel binding param if present
+            url = url.replace("&channel_binding=require", "").replace("?channel_binding=require", "")
+            return url
         return (
             f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}"
             f"@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
@@ -71,6 +81,12 @@ class Settings(BaseSettings):
     @property
     def DATABASE_URL_SYNC(self) -> str:
         """Synchronous URL for Alembic migrations."""
+        if self.OVERRIDE_DATABASE_URL:
+            url = self.OVERRIDE_DATABASE_URL
+            if url.startswith("postgresql+asyncpg://"):
+                url = url.replace("postgresql+asyncpg://", "postgresql://", 1)
+            url = url.replace("&channel_binding=require", "")
+            return url
         return (
             f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}"
             f"@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
