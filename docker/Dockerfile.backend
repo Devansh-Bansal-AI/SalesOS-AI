@@ -12,12 +12,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Python dependencies
-COPY backend/pyproject.toml .
-RUN pip install --no-cache-dir -e ".[dev]"
-
-# Application code
+# Application code & dependencies
 COPY backend/ .
+RUN pip install --no-cache-dir -e ".[dev]"
 
 EXPOSE 8000
 

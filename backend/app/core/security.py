@@ -19,17 +19,26 @@ from app.core.exceptions import (
 
 # ── Password Hashing ────────────────────────────────────────
 
+import bcrypt
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def hash_password(password: str) -> str:
     """Hash a plaintext password using bcrypt."""
-    return pwd_context.hash(password)
+    pw_bytes = password.encode("utf-8")[:72]
+    salt = bcrypt.gensalt()
+    return bcrypt.hashpw(pw_bytes, salt).decode("utf-8")
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verify a plaintext password against a bcrypt hash."""
-    return pwd_context.verify(plain_password, hashed_password)
+    pw_bytes = plain_password.encode("utf-8")[:72]
+    hash_bytes = hashed_password.encode("utf-8")
+    try:
+        return bcrypt.checkpw(pw_bytes, hash_bytes)
+    except Exception:
+        return pwd_context.verify(plain_password, hashed_password)
 
 
 def hash_api_key(api_key: str) -> str:
@@ -139,6 +148,7 @@ PERMISSIONS: dict[str, set[str]] = {
         "leads:read",
         "leads:read_all",
         "leads:update",
+        "leads:write",
         "leads:delete",
         "leads:assign",
         "leads:qualify",
@@ -170,6 +180,7 @@ PERMISSIONS: dict[str, set[str]] = {
         "leads:read",
         "leads:read_all",
         "leads:update",
+        "leads:write",
         "leads:assign",
         "leads:qualify",
         "leads:enrich",
@@ -192,6 +203,7 @@ PERMISSIONS: dict[str, set[str]] = {
         "leads:create",
         "leads:read",
         "leads:update",
+        "leads:write",
         "leads:qualify",
         "leads:enrich",
         "conversations:read",

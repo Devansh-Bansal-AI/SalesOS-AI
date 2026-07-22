@@ -12,11 +12,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Python dependencies
-COPY backend/pyproject.toml .
-RUN pip install --no-cache-dir -e .
-
-# Application code
+# Application code & dependencies
 COPY backend/ .
+RUN pip install --no-cache-dir -e .
 
 CMD ["celery", "-A", "app.tasks.celery_app", "worker", "--loglevel=info"]
