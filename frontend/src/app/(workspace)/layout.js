@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { AuthProvider, useAuth } from '@/lib/auth';
 import Sidebar from '@/components/layout/Sidebar';
 import Topbar from '@/components/layout/Topbar';
+import CopilotSidePanel from '@/components/copilot/CopilotSidePanel';
 
 function WorkspaceGuard({ children }) {
   const { isAuthenticated, isLoading } = useAuth();
@@ -45,6 +46,7 @@ function WorkspaceGuard({ children }) {
           {children}
         </div>
       </main>
+      <CopilotSidePanel />
     </div>
   );
 }

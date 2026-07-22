@@ -68,7 +68,7 @@ async def test_human_review_rule():
 async def test_decision_engine_evaluation_order():
     """Test DecisionEngine evaluates rules by priority (lowest priority number first)."""
     engine = DecisionEngine()
-    
+
     # Priority 5 (HumanReviewRule) should beat Priority 10 (AutoBookDemoRule) if confidence < 0.5
     context = {
         "confidence": 0.4,

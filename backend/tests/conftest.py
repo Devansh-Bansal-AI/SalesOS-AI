@@ -39,6 +39,7 @@ async def async_client() -> AsyncGenerator[AsyncClient, None]:
 async def db_session() -> AsyncGenerator[AsyncSession, None]:
     """Database session for tests."""
     from unittest.mock import AsyncMock
+
     try:
         engine = create_async_engine(TEST_DATABASE_URL, echo=False)
         async with engine.begin() as conn:

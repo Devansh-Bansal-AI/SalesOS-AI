@@ -56,14 +56,18 @@ async def test_analytics_endpoints(async_client: AsyncClient, db_session):
             assert "sla_health_percentage" in data
 
             # 2. Pipeline Analytics Endpoint
-            resp_pipe = await async_client.get("/api/v1/analytics/pipeline?days=30", headers=headers)
+            resp_pipe = await async_client.get(
+                "/api/v1/analytics/pipeline?days=30", headers=headers
+            )
             assert resp_pipe.status_code == 200
             data_pipe = resp_pipe.json()
             assert "stage_counts" in data_pipe
             assert "funnel_conversion_rates" in data_pipe
 
             # 3. Agent Analytics Endpoint
-            resp_agents = await async_client.get("/api/v1/analytics/agents?days=30", headers=headers)
+            resp_agents = await async_client.get(
+                "/api/v1/analytics/agents?days=30", headers=headers
+            )
             assert resp_agents.status_code == 200
             data_agents = resp_agents.json()
             assert "agents" in data_agents
