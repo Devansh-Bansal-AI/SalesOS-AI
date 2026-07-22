@@ -18,6 +18,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 class ActivityTypes:
     """Formal activity types for the CRM timeline."""
+
     MEETING = "meeting"
     TASK = "task"
     REMINDER = "reminder"
@@ -39,6 +40,7 @@ class ActivityTypes:
 
 class ActivityCreateRequest(BaseModel):
     """Create a CRM activity."""
+
     lead_id: UUID
     activity_type: str = Field(..., max_length=100)
     title: str = Field(..., max_length=500)
@@ -49,6 +51,7 @@ class ActivityCreateRequest(BaseModel):
 
 class ActivityResponse(BaseModel):
     """Activity detail for CRM timeline."""
+
     id: UUID
     lead_id: UUID
     user_id: UUID | None
@@ -67,6 +70,7 @@ class ActivityResponse(BaseModel):
 
 class MeetingCreateRequest(BaseModel):
     """Book a meeting with a lead."""
+
     lead_id: UUID
     title: str = Field(..., max_length=500)
     description: str | None = None
@@ -78,6 +82,7 @@ class MeetingCreateRequest(BaseModel):
 
 class MeetingRescheduleRequest(BaseModel):
     """Reschedule a meeting."""
+
     scheduled_at: datetime
     duration_minutes: int | None = None
     timezone: str | None = None
@@ -86,11 +91,13 @@ class MeetingRescheduleRequest(BaseModel):
 
 class MeetingCancelRequest(BaseModel):
     """Cancel a meeting."""
+
     reason: str = "cancelled_by_user"
 
 
 class MeetingResponse(BaseModel):
     """Meeting detail."""
+
     id: UUID
     lead_id: UUID
     host_user_id: UUID | None
@@ -115,6 +122,7 @@ class MeetingResponse(BaseModel):
 
 class MeetingListResponse(BaseModel):
     """Compact meeting for list views."""
+
     id: UUID
     lead_id: UUID
     title: str
@@ -133,6 +141,7 @@ class MeetingListResponse(BaseModel):
 
 class AssignmentStrategy:
     """Available assignment strategies."""
+
     ROUND_ROBIN = "round_robin"
     LOAD_BASED = "load_based"
     TERRITORY = "territory"
@@ -142,6 +151,7 @@ class AssignmentStrategy:
 
 class AssignmentConfig(BaseModel):
     """Organization-level assignment configuration."""
+
     strategy: str = Field(
         AssignmentStrategy.ROUND_ROBIN,
         pattern="^(round_robin|load_based|territory|skill_based|manual)$",
@@ -153,6 +163,7 @@ class AssignmentConfig(BaseModel):
 
 class AssignmentResult(BaseModel):
     """Result from the Assignment Engine."""
+
     assigned_to: UUID
     strategy_used: str
     reason: str
@@ -164,14 +175,16 @@ class AssignmentResult(BaseModel):
 
 class SLAConfig(BaseModel):
     """SLA configuration for an organization."""
-    first_response_minutes: int = Field(120, ge=1)   # 2 hours default
+
+    first_response_minutes: int = Field(120, ge=1)  # 2 hours default
     follow_up_response_minutes: int = Field(480, ge=1)  # 8 hours default
-    escalation_after_minutes: int = Field(240, ge=1)   # 4 hours default
-    reminder_before_minutes: int = Field(30, ge=1)     # 30 min before violation
+    escalation_after_minutes: int = Field(240, ge=1)  # 4 hours default
+    reminder_before_minutes: int = Field(30, ge=1)  # 30 min before violation
 
 
 class SLAStatus(BaseModel):
     """SLA status for a lead."""
+
     lead_id: UUID
     is_violated: bool
     violation_type: str | None = None  # first_response, follow_up_response
@@ -186,6 +199,7 @@ class SLAStatus(BaseModel):
 
 class PipelineMetrics(BaseModel):
     """Pipeline overview metrics."""
+
     total_leads: int = 0
     new_leads: int = 0
     qualified_leads: int = 0
@@ -199,6 +213,7 @@ class PipelineMetrics(BaseModel):
 
 class ConversionMetrics(BaseModel):
     """Conversion funnel metrics."""
+
     lead_to_qualified_rate: float = 0.0
     qualified_to_meeting_rate: float = 0.0
     meeting_to_conversion_rate: float = 0.0
@@ -208,6 +223,7 @@ class ConversionMetrics(BaseModel):
 
 class RepPerformance(BaseModel):
     """Individual sales rep performance."""
+
     user_id: UUID
     user_name: str
     active_leads: int = 0

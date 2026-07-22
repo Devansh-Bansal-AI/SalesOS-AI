@@ -28,6 +28,7 @@ logger = get_logger("integrations.registry")
 @dataclass
 class EmailMessage:
     """Standardized email message for all providers."""
+
     to: str
     subject: str
     body_text: str
@@ -42,6 +43,7 @@ class EmailMessage:
 @dataclass
 class EmailResult:
     """Standardized email delivery result."""
+
     success: bool
     provider: str
     message_id: str | None = None
@@ -73,10 +75,11 @@ class EmailProvider(ABC):
 @dataclass
 class CalendarEvent:
     """Standardized calendar event for all providers."""
+
     title: str
     description: str | None = None
     start_time: str = ""  # ISO 8601
-    end_time: str = ""    # ISO 8601
+    end_time: str = ""  # ISO 8601
     timezone: str = "UTC"
     attendees: list[str] | None = None
     location: str | None = None
@@ -86,13 +89,15 @@ class CalendarEvent:
 @dataclass
 class CalendarSlot:
     """Available time slot."""
+
     start_time: str  # ISO 8601
-    end_time: str    # ISO 8601
+    end_time: str  # ISO 8601
 
 
 @dataclass
 class CalendarResult:
     """Result from a calendar operation."""
+
     success: bool
     provider: str
     event_id: str | None = None
@@ -137,6 +142,7 @@ class CalendarProvider(ABC):
 @dataclass
 class SearchResult:
     """A single search result."""
+
     title: str
     url: str
     snippet: str
@@ -179,9 +185,7 @@ class IntegrationRegistry:
 
     # ── Email ───────────────────────────────────────────
 
-    def register_email(
-        self, name: str, provider: EmailProvider, *, default: bool = False
-    ) -> None:
+    def register_email(self, name: str, provider: EmailProvider, *, default: bool = False) -> None:
         self._email_providers[name] = provider
         if default or self._default_email is None:
             self._default_email = name

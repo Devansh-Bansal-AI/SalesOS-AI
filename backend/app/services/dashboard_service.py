@@ -59,12 +59,9 @@ class DashboardService:
         total = sum(status_counts.values())
 
         # Average qualification score
-        avg_stmt = (
-            select(func.avg(LeadScore.score))
-            .where(
-                LeadScore.organization_id == organization_id,
-                LeadScore.created_at >= since,
-            )
+        avg_stmt = select(func.avg(LeadScore.score)).where(
+            LeadScore.organization_id == organization_id,
+            LeadScore.created_at >= since,
         )
         avg_result = await self.session.execute(avg_stmt)
         avg_score = avg_result.scalar_one_or_none() or 0.0
@@ -106,18 +103,22 @@ class DashboardService:
         counts = {row[0]: row[1] for row in result.all()}
 
         total = sum(counts.values()) or 1  # Avoid division by zero
-        qualified = counts.get("qualified", 0) + counts.get("meeting_booked", 0) + counts.get("converted", 0)
+        qualified = (
+            counts.get("qualified", 0)
+            + counts.get("meeting_booked", 0)
+            + counts.get("converted", 0)
+        )
         with_meetings = counts.get("meeting_booked", 0) + counts.get("converted", 0)
         converted = counts.get("converted", 0)
 
         return ConversionMetrics(
             lead_to_qualified_rate=round(qualified / total * 100, 1),
-            qualified_to_meeting_rate=round(
-                with_meetings / qualified * 100, 1
-            ) if qualified else 0.0,
-            meeting_to_conversion_rate=round(
-                converted / with_meetings * 100, 1
-            ) if with_meetings else 0.0,
+            qualified_to_meeting_rate=round(with_meetings / qualified * 100, 1)
+            if qualified
+            else 0.0,
+            meeting_to_conversion_rate=round(converted / with_meetings * 100, 1)
+            if with_meetings
+            else 0.0,
             overall_conversion_rate=round(converted / total * 100, 1),
         )
 
@@ -131,14 +132,11 @@ class DashboardService:
         since = datetime.now(UTC) - timedelta(days=days)
 
         # Get all active reps
-        user_stmt = (
-            select(User)
-            .where(
-                User.organization_id == organization_id,
-                User.is_active.is_(True),
-                User.role.in_(["sales_rep", "sales_manager"]),
-                User.deleted_at.is_(None),
-            )
+        user_stmt = select(User).where(
+            User.organization_id == organization_id,
+            User.is_active.is_(True),
+            User.role.in_(["sales_rep", "sales_manager"]),
+            User.deleted_at.is_(None),
         )
         user_result = await self.session.execute(user_stmt)
         users = list(user_result.scalars().all())
@@ -189,13 +187,15 @@ class DashboardService:
             conv_result = await self.session.execute(conversion_stmt)
             conversions = conv_result.scalar_one()
 
-            performances.append(RepPerformance(
-                user_id=user.id,
-                user_name=user.full_name,
-                active_leads=active_leads,
-                meetings_booked=meetings_booked,
-                conversions=conversions,
-            ))
+            performances.append(
+                RepPerformance(
+                    user_id=user.id,
+                    user_name=user.full_name,
+                    active_leads=active_leads,
+                    meetings_booked=meetings_booked,
+                    conversions=conversions,
+                )
+            )
 
         # Sort by conversions desc
         performances.sort(key=lambda p: p.conversions, reverse=True)
@@ -229,10 +229,13 @@ class DashboardService:
 
         total_leads = sum(counts.values())
         active_leads = sum(
-            counts.get(s, 0)
-            for s in ("new", "contacted", "qualified", "nurture", "meeting_booked")
+            counts.get(s, 0) for s in ("new", "contacted", "qualified", "nurture", "meeting_booked")
         )
-        qualified_leads = counts.get("qualified", 0) + counts.get("meeting_booked", 0) + counts.get("converted", 0)
+        qualified_leads = (
+            counts.get("qualified", 0)
+            + counts.get("meeting_booked", 0)
+            + counts.get("converted", 0)
+        )
         converted_leads = counts.get("converted", 0)
         meetings_booked = counts.get("meeting_booked", 0) + counts.get("converted", 0)
 
@@ -276,17 +279,18 @@ class DashboardService:
         counts = {row[0]: row[1] for row in result.all()}
 
         total = sum(counts.values()) or 1
-        qualified = counts.get("qualified", 0) + counts.get("meeting_booked", 0) + counts.get("converted", 0)
+        qualified = (
+            counts.get("qualified", 0)
+            + counts.get("meeting_booked", 0)
+            + counts.get("converted", 0)
+        )
         meetings = counts.get("meeting_booked", 0) + counts.get("converted", 0)
         converted = counts.get("converted", 0)
 
         # Avg qualification score
-        avg_stmt = (
-            select(func.avg(LeadScore.score))
-            .where(
-                LeadScore.organization_id == organization_id,
-                LeadScore.created_at >= since,
-            )
+        avg_stmt = select(func.avg(LeadScore.score)).where(
+            LeadScore.organization_id == organization_id,
+            LeadScore.created_at >= since,
         )
         avg_res = await self.session.execute(avg_stmt)
         avg_score = avg_res.scalar_one_or_none() or 0.0
@@ -296,8 +300,12 @@ class DashboardService:
             stage_counts=counts,
             funnel_conversion_rates={
                 "lead_to_qualified": round((qualified / total) * 100, 1),
-                "qualified_to_meeting": round((meetings / qualified) * 100, 1) if qualified else 0.0,
-                "meeting_to_conversion": round((converted / meetings) * 100, 1) if meetings else 0.0,
+                "qualified_to_meeting": round((meetings / qualified) * 100, 1)
+                if qualified
+                else 0.0,
+                "meeting_to_conversion": round((converted / meetings) * 100, 1)
+                if meetings
+                else 0.0,
                 "overall": round((converted / total) * 100, 1),
             },
             avg_qualification_score=round(float(avg_score), 1),
@@ -326,9 +334,9 @@ class DashboardService:
             select(
                 AgentRun.agent_type,
                 func.count(AgentRun.id).label("total_runs"),
-                func.sum(
-                    func.cast(AgentRun.status == "completed", Integer)
-                ).label("successful_runs"),
+                func.sum(func.cast(AgentRun.status == "completed", Integer)).label(
+                    "successful_runs"
+                ),
                 func.avg(AgentRun.duration_ms).label("avg_latency"),
                 func.sum(func.coalesce(AgentRun.total_tokens, 0)).label("sum_tokens"),
                 func.sum(func.coalesce(AgentRun.estimated_cost, 0.0)).label("sum_cost"),
@@ -390,4 +398,3 @@ class DashboardService:
             compliance_percentage=96.5,
             escalations_count=1,
         )
-

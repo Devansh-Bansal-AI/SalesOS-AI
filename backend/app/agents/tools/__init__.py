@@ -21,6 +21,7 @@ current_session = contextvars.ContextVar("current_session", default=None)
 @dataclass
 class CRMContact:
     """Contact record from any CRM source."""
+
     id: str
     email: str
     name: str | None = None
@@ -60,6 +61,7 @@ class CRMToolProvider(ABC):
 @dataclass
 class CompanyInfo:
     """Enriched company information from any research source."""
+
     name: str
     domain: str | None = None
     industry: str | None = None
@@ -167,6 +169,7 @@ class EmailToolProvider(ABC):
 @dataclass
 class PolicyRule:
     """A business policy rule."""
+
     name: str
     condition: str
     action: str
@@ -183,9 +186,7 @@ class PolicyToolProvider(ABC):
         ...
 
     @abstractmethod
-    async def evaluate_rule(
-        self, rule: PolicyRule, context: dict[str, Any]
-    ) -> bool:
+    async def evaluate_rule(self, rule: PolicyRule, context: dict[str, Any]) -> bool:
         """Evaluate a single rule against a context."""
         ...
 

@@ -55,42 +55,28 @@ class AssignmentEngine:
         config = config or AssignmentConfig()
 
         if manual_user_id:
-            return await self._assign_manual(
-                organization_id, lead_id, manual_user_id
-            )
+            return await self._assign_manual(organization_id, lead_id, manual_user_id)
 
         strategy = config.strategy
         candidates = await self._get_eligible_reps(organization_id, config)
 
         if not candidates:
             if config.fallback_user_id:
-                return await self._assign_manual(
-                    organization_id, lead_id, config.fallback_user_id
-                )
+                return await self._assign_manual(organization_id, lead_id, config.fallback_user_id)
             raise ValueError("No eligible sales reps available for assignment")
 
         result: AssignmentResult
 
         if strategy == AssignmentStrategy.ROUND_ROBIN:
-            result = await self._round_robin(
-                organization_id, lead_id, candidates
-            )
+            result = await self._round_robin(organization_id, lead_id, candidates)
         elif strategy == AssignmentStrategy.LOAD_BASED:
-            result = await self._load_based(
-                organization_id, lead_id, candidates, config
-            )
+            result = await self._load_based(organization_id, lead_id, candidates, config)
         elif strategy == AssignmentStrategy.TERRITORY:
-            result = await self._territory_based(
-                organization_id, lead_id, candidates
-            )
+            result = await self._territory_based(organization_id, lead_id, candidates)
         elif strategy == AssignmentStrategy.SKILL_BASED:
-            result = await self._skill_based(
-                organization_id, lead_id, candidates
-            )
+            result = await self._skill_based(organization_id, lead_id, candidates)
         else:
-            result = await self._round_robin(
-                organization_id, lead_id, candidates
-            )
+            result = await self._round_robin(organization_id, lead_id, candidates)
 
         # Update lead
         lead = await self.session.get(Lead, lead_id)
@@ -231,9 +217,7 @@ class AssignmentEngine:
         """
         # TODO: Implement skill matching when user skill profiles are added
         config = AssignmentConfig()
-        result = await self._load_based(
-            organization_id, lead_id, candidates, config
-        )
+        result = await self._load_based(organization_id, lead_id, candidates, config)
         return AssignmentResult(
             assigned_to=result.assigned_to,
             strategy_used=AssignmentStrategy.SKILL_BASED,

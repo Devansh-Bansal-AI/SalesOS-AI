@@ -94,6 +94,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     # Shutdown
     logger.info("application_shutting_down")
     from app.db.qdrant import close_qdrant_client
+
     await close_db()
     await close_redis()
     await close_qdrant_client()

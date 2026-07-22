@@ -54,12 +54,14 @@ class AuthService:
 
         # Create organization
         from slugify import slugify
+
         slug = slugify(request.organization_name)
 
         # Ensure unique slug
         base_slug = slug
         counter = 1
         from app.repositories.base import BaseRepository
+
         org_repo = BaseRepository(Organization, self.session)
         while await org_repo.exists(slug=slug):
             slug = f"{base_slug}-{counter}"

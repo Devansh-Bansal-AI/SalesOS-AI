@@ -29,6 +29,7 @@ class OpenAIProvider(LLMProvider):
             raise LLMError("openai", "OPENAI_API_KEY not configured")
 
         from openai import AsyncOpenAI
+
         self._client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
         self._default_model = settings.OPENAI_MODEL
 
@@ -41,9 +42,7 @@ class OpenAIProvider(LLMProvider):
         model_name = config.model or self._default_model
 
         try:
-            openai_messages = [
-                {"role": msg.role, "content": msg.content} for msg in messages
-            ]
+            openai_messages = [{"role": msg.role, "content": msg.content} for msg in messages]
 
             kwargs: dict[str, Any] = {
                 "model": model_name,
@@ -93,8 +92,7 @@ class OpenAIProvider(LLMProvider):
 
         schema_json = output_schema.model_json_schema()
         schema_instruction = (
-            f"\n\nRespond with valid JSON matching this schema:\n"
-            f"```json\n{schema_json}\n```"
+            f"\n\nRespond with valid JSON matching this schema:\n```json\n{schema_json}\n```"
         )
 
         enhanced_messages = list(messages)
@@ -109,5 +107,6 @@ class OpenAIProvider(LLMProvider):
         response = await self.generate(enhanced_messages, config)
 
         import json
+
         parsed = output_schema.model_validate(json.loads(response.content))
         return parsed, response

@@ -39,7 +39,7 @@ class PostgresCRMProvider(CRMToolProvider):
                 "source": lead.source,
                 "qualification": lead.qualification,
                 "enrichment": lead.enrichment,
-            }
+            },
         )
 
     async def create_contact(self, data: dict[str, Any]) -> CRMContact:
@@ -79,7 +79,7 @@ class PostgresCRMProvider(CRMToolProvider):
                 "source": lead.source,
                 "qualification": lead.qualification,
                 "enrichment": lead.enrichment,
-            }
+            },
         )
 
     async def update_contact(self, id: str, data: dict[str, Any]) -> CRMContact:
@@ -118,7 +118,7 @@ class PostgresCRMProvider(CRMToolProvider):
                 "source": lead.source,
                 "qualification": lead.qualification,
                 "enrichment": lead.enrichment,
-            }
+            },
         )
 
     async def get_interaction_history(self, email: str) -> list[dict[str, Any]]:
@@ -136,45 +136,54 @@ class PostgresCRMProvider(CRMToolProvider):
         from app.models.message import Message
 
         # Fetch activities
-        act_stmt = select(Activity).where(
-            Activity.organization_id == org_id,
-            Activity.lead_id == lead.id
-        ).order_by(Activity.created_at.desc())
+        act_stmt = (
+            select(Activity)
+            .where(Activity.organization_id == org_id, Activity.lead_id == lead.id)
+            .order_by(Activity.created_at.desc())
+        )
         act_res = await session.execute(act_stmt)
         activities = act_res.scalars().all()
 
         history = []
         for act in activities:
-            history.append({
-                "type": "activity",
-                "subtype": act.activity_type,
-                "timestamp": act.created_at.isoformat(),
-                "summary": act.title,
-                "description": act.description,
-                "metadata": act.metadata_,
-            })
+            history.append(
+                {
+                    "type": "activity",
+                    "subtype": act.activity_type,
+                    "timestamp": act.created_at.isoformat(),
+                    "summary": act.title,
+                    "description": act.description,
+                    "metadata": act.metadata_,
+                }
+            )
 
         # Fetch messages
-        msg_stmt = select(Message).join(Conversation).where(
-            Conversation.organization_id == org_id,
-            Conversation.lead_id == lead.id
-        ).order_by(Message.created_at.desc())
+        msg_stmt = (
+            select(Message)
+            .join(Conversation)
+            .where(Conversation.organization_id == org_id, Conversation.lead_id == lead.id)
+            .order_by(Message.created_at.desc())
+        )
         msg_res = await session.execute(msg_stmt)
         messages = msg_res.scalars().all()
 
         for msg in messages:
-            history.append({
-                "type": "message",
-                "subtype": msg.direction,
-                "timestamp": msg.created_at.isoformat(),
-                "summary": f"Subject: {msg.subject}" if msg.subject else f"Message via {msg.channel}",
-                "description": msg.body_text,
-                "metadata": {
-                    "channel": msg.channel,
-                    "sender": msg.sender_email,
-                    "recipient": msg.recipient_email,
+            history.append(
+                {
+                    "type": "message",
+                    "subtype": msg.direction,
+                    "timestamp": msg.created_at.isoformat(),
+                    "summary": f"Subject: {msg.subject}"
+                    if msg.subject
+                    else f"Message via {msg.channel}",
+                    "description": msg.body_text,
+                    "metadata": {
+                        "channel": msg.channel,
+                        "sender": msg.sender_email,
+                        "recipient": msg.recipient_email,
+                    },
                 }
-            })
+            )
 
         # Sort history by timestamp descending
         history.sort(key=lambda x: x["timestamp"], reverse=True)

@@ -86,9 +86,7 @@ class LeadService:
                     "new_source": request.source,
                 },
             )
-            raise ConflictError(
-                f"A lead with email {email} already exists (ID: {existing.id})"
-            )
+            raise ConflictError(f"A lead with email {email} already exists (ID: {existing.id})")
 
         # Resolve company
         company_id = None
@@ -216,9 +214,7 @@ class LeadService:
         old_status = lead.status
         new_status = update_data.get("status")
 
-        updated = await self.lead_repo.update_by_id(
-            lead_id, organization_id, **update_data
-        )
+        updated = await self.lead_repo.update_by_id(lead_id, organization_id, **update_data)
 
         if new_status and new_status != old_status:
             await self.crm.log_status_change(
@@ -255,15 +251,11 @@ class LeadService:
         assigned_by: UUID | None = None,
     ) -> LeadResponse:
         """Assign a lead to a user."""
-        lead = await self.lead_repo.update_by_id(
-            lead_id, organization_id, assigned_to=assigned_to
-        )
+        lead = await self.lead_repo.update_by_id(lead_id, organization_id, assigned_to=assigned_to)
         if not lead:
             raise NotFoundError("Lead", lead_id)
 
-        await self.crm.log_lead_assigned(
-            organization_id, lead_id, assigned_to, assigned_by
-        )
+        await self.crm.log_lead_assigned(organization_id, lead_id, assigned_to, assigned_by)
 
         await publish(
             self.session,
@@ -330,9 +322,7 @@ class LeadService:
         )
 
         # CRM activity
-        await self.crm.log_lead_qualified(
-            organization_id, lead_id, score, priority, intent
-        )
+        await self.crm.log_lead_qualified(organization_id, lead_id, score, priority, intent)
 
         # Publish event
         await publish(
@@ -381,9 +371,7 @@ class LeadService:
         # Update or create company
         if company_name and company_data:
             domain = company_data.get("domain")
-            company = await self.company_repo.find_or_create(
-                organization_id, company_name, domain
-            )
+            company = await self.company_repo.find_or_create(organization_id, company_name, domain)
 
             # Update company with enrichment data
             if company_data.get("industry"):
@@ -401,9 +389,7 @@ class LeadService:
         data_points = len([v for v in enrichment_data.values() if v])
 
         # CRM activity
-        await self.crm.log_lead_enriched(
-            organization_id, lead_id, company_name, data_points
-        )
+        await self.crm.log_lead_enriched(organization_id, lead_id, company_name, data_points)
 
         # Publish event
         await publish(
@@ -422,8 +408,14 @@ class LeadService:
     def _validate_email_domain(self, email: str) -> None:
         """Reject personal email domains for B2B leads when strict mode is enabled."""
         blocked_domains = {
-            "gmail.com", "yahoo.com", "hotmail.com", "outlook.com",
-            "aol.com", "icloud.com", "mail.com", "protonmail.com",
+            "gmail.com",
+            "yahoo.com",
+            "hotmail.com",
+            "outlook.com",
+            "aol.com",
+            "icloud.com",
+            "mail.com",
+            "protonmail.com",
         }
         domain = email.split("@")[1].lower()
         if domain in blocked_domains:
@@ -444,16 +436,25 @@ class LeadService:
             return None
 
     def _intent_to_score(self, intent: str) -> int:
-        return {"demo_request": 90, "pricing": 80, "evaluation": 70,
-                "partnership": 60, "general": 40, "support": 20, "spam": 0}.get(
-            intent, 50
-        )
+        return {
+            "demo_request": 90,
+            "pricing": 80,
+            "evaluation": 70,
+            "partnership": 60,
+            "general": 40,
+            "support": 20,
+            "spam": 0,
+        }.get(intent, 50)
 
     def _urgency_to_score(self, urgency: str) -> int:
-        return {"immediate": 100, "this_week": 80, "this_month": 60,
-                "this_quarter": 40, "exploring": 20, "unknown": 30}.get(
-            urgency, 30
-        )
+        return {
+            "immediate": 100,
+            "this_week": 80,
+            "this_month": 60,
+            "this_quarter": 40,
+            "exploring": 20,
+            "unknown": 30,
+        }.get(urgency, 30)
 
     def _to_response(self, lead: Lead) -> LeadResponse:
         """Convert ORM model to response schema."""

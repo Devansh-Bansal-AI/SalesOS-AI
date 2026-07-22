@@ -16,9 +16,7 @@ logger = structlog.get_logger("http")
 class LoggingMiddleware(BaseHTTPMiddleware):
     """Logs HTTP request/response with timing information."""
 
-    async def dispatch(
-        self, request: Request, call_next: RequestResponseEndpoint
-    ) -> Response:
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         start_time = time.perf_counter()
 
         response = await call_next(request)

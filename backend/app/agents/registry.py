@@ -22,6 +22,7 @@ logger = get_logger("agent_registry")
 
 class AgentRegistration(BaseModel):
     """Metadata about a registered agent."""
+
     agent_type: str
     agent_class_name: str
     module_path: str
@@ -93,9 +94,7 @@ class AgentRegistry:
         """
         if agent_type not in self._agents:
             available = ", ".join(sorted(self._agents.keys()))
-            raise KeyError(
-                f"Agent '{agent_type}' not registered. Available: {available}"
-            )
+            raise KeyError(f"Agent '{agent_type}' not registered. Available: {available}")
 
         agent_class = self._agents[agent_type]
         return agent_class(session, organization_id, **kwargs)
@@ -159,10 +158,12 @@ def register_agent(
         class QualificationAgent(BaseAgent[QualificationInput, QualificationOutput]):
             ...
     """
+
     def decorator(cls):
         name = agent_type or getattr(cls, "agent_type", cls.__name__.lower())
         _registry.register(name, cls, description=description, version=version)
         return cls
+
     return decorator
 
 
@@ -181,27 +182,32 @@ def register_all_agents() -> None:
     # Register agents that don't use the decorator
     if not _registry.is_registered("qualification"):
         _registry.register(
-            "qualification", QualificationAgent,
+            "qualification",
+            QualificationAgent,
             description="Scores and qualifies inbound leads",
         )
     if not _registry.is_registered("enrichment"):
         _registry.register(
-            "enrichment", EnrichmentAgent,
+            "enrichment",
+            EnrichmentAgent,
             description="Enriches leads with company and contact data",
         )
     if not _registry.is_registered("conversation_intelligence"):
         _registry.register(
-            "conversation_intelligence", ConversationIntelligenceAgent,
+            "conversation_intelligence",
+            ConversationIntelligenceAgent,
             description="9-dimension conversation analysis with memory",
         )
     if not _registry.is_registered("outreach"):
         _registry.register(
-            "outreach", OutreachAgent,
+            "outreach",
+            OutreachAgent,
             description="Generates personalized outreach emails",
         )
     if not _registry.is_registered("booking"):
         _registry.register(
-            "booking", BookingAgent,
+            "booking",
+            BookingAgent,
             description="Determines optimal meeting setup",
         )
 

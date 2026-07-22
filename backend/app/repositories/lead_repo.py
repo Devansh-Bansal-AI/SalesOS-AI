@@ -53,7 +53,5 @@ class LeadRepository(BaseRepository[Lead]):
                 Lead.last_name.ilike(search_term),
             )
         ]
-        items, total = await self.list(
-            organization_id, offset=offset, limit=limit, filters=filters
-        )
+        items, total = await self.list(organization_id, offset=offset, limit=limit, filters=filters)
         return list(items), total

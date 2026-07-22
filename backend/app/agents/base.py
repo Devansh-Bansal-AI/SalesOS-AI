@@ -116,6 +116,7 @@ class BaseAgent(ABC, Generic[InputT, OutputT]):
 
         # Bind context variables for RAG/CRM/other tools
         from app.agents.tools import current_org_id, current_session
+
         token_org = current_org_id.set(self.organization_id)
         token_session = current_session.set(self.session)
 

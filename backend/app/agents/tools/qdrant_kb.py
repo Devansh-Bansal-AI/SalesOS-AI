@@ -82,7 +82,22 @@ class QdrantKnowledgeBaseProvider(KnowledgeBaseToolProvider):
             "source": str(meta.get("source") or "system"),
             "namespace": namespace or "",
             "text": text,
-            **{k: v for k, v in meta.items() if k not in ("organization_id", "org_id", "lead_id", "conversation_id", "message_id", "agent", "timestamp", "embedding_version", "source")},
+            **{
+                k: v
+                for k, v in meta.items()
+                if k
+                not in (
+                    "organization_id",
+                    "org_id",
+                    "lead_id",
+                    "conversation_id",
+                    "message_id",
+                    "agent",
+                    "timestamp",
+                    "embedding_version",
+                    "source",
+                )
+            },
         }
 
     async def store(
@@ -96,9 +111,7 @@ class QdrantKnowledgeBaseProvider(KnowledgeBaseToolProvider):
         target_collection = collection_name or self.default_collection
         client = self._get_client()
 
-        await ensure_collection_exists(
-            client, target_collection, vector_size=self.dimension
-        )
+        await ensure_collection_exists(client, target_collection, vector_size=self.dimension)
 
         vector = self._generate_embedding(text)
         payload = self._build_rich_metadata(text, namespace, metadata)
@@ -141,9 +154,7 @@ class QdrantKnowledgeBaseProvider(KnowledgeBaseToolProvider):
         # Build optional metadata filters
         must_filters = []
         if namespace:
-            must_filters.append(
-                FieldCondition(key="namespace", match=MatchValue(value=namespace))
-            )
+            must_filters.append(FieldCondition(key="namespace", match=MatchValue(value=namespace)))
         if organization_id:
             must_filters.append(
                 FieldCondition(key="organization_id", match=MatchValue(value=str(organization_id)))
@@ -212,6 +223,7 @@ class QdrantKnowledgeBaseProvider(KnowledgeBaseToolProvider):
 
         try:
             from qdrant_client.models import PointIdsList
+
             await client.delete(
                 collection_name=target_collection,
                 points_selector=PointIdsList(points=[point_id]),
@@ -219,5 +231,10 @@ class QdrantKnowledgeBaseProvider(KnowledgeBaseToolProvider):
             logger.info("vector_deleted", collection=target_collection, point_id=point_id)
             return True
         except Exception as e:
-            logger.error("vector_delete_failed", collection=target_collection, point_id=point_id, error=str(e))
+            logger.error(
+                "vector_delete_failed",
+                collection=target_collection,
+                point_id=point_id,
+                error=str(e),
+            )
             return False

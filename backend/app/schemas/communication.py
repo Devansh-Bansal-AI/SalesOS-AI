@@ -15,6 +15,7 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 class ConversationCreateRequest(BaseModel):
     """Start a new conversation thread."""
+
     lead_id: UUID
     channel: str = Field("email", pattern="^(email|chat|sms|slack|whatsapp|api)$")
     subject: str | None = None
@@ -22,6 +23,7 @@ class ConversationCreateRequest(BaseModel):
 
 class ConversationResponse(BaseModel):
     """Conversation thread detail."""
+
     id: UUID
     lead_id: UUID
     status: str
@@ -38,6 +40,7 @@ class ConversationResponse(BaseModel):
 
 class ConversationListResponse(BaseModel):
     """Compact conversation for list views."""
+
     id: UUID
     lead_id: UUID
     status: str
@@ -55,6 +58,7 @@ class ConversationListResponse(BaseModel):
 
 class MessageCreateRequest(BaseModel):
     """Send or record a message in a conversation."""
+
     direction: str = Field("outbound", pattern="^(inbound|outbound)$")
     channel: str = Field("email", pattern="^(email|chat|sms|slack|whatsapp|api)$")
     sender_email: str | None = None
@@ -66,6 +70,7 @@ class MessageCreateRequest(BaseModel):
 
 class MessageResponse(BaseModel):
     """Message detail."""
+
     id: UUID
     conversation_id: UUID
     direction: str
@@ -85,6 +90,7 @@ class MessageResponse(BaseModel):
 
 class EmailSendRequest(BaseModel):
     """Send an email to a lead."""
+
     lead_id: UUID
     subject: str = Field(..., max_length=500)
     body_text: str
@@ -96,6 +102,7 @@ class EmailSendRequest(BaseModel):
 
 class EmailResponse(BaseModel):
     """Email detail."""
+
     id: UUID
     lead_id: UUID
     conversation_id: UUID | None
@@ -118,6 +125,7 @@ class EmailResponse(BaseModel):
 
 class InboundEmailPayload(BaseModel):
     """Inbound email received via webhook."""
+
     from_email: EmailStr
     to_email: EmailStr
     subject: str | None = None
@@ -133,6 +141,7 @@ class InboundEmailPayload(BaseModel):
 
 class ConversationAnalysis(BaseModel):
     """Output from the Conversation Intelligence Agent."""
+
     sentiment: str = Field(..., pattern="^(very_positive|positive|neutral|negative|very_negative)$")
     intent: str
     buying_signals: list[str] = Field(default_factory=list)
@@ -154,6 +163,7 @@ class ConversationAnalysis(BaseModel):
 
 class FollowUpSequenceResponse(BaseModel):
     """Follow-up sequence status."""
+
     id: UUID
     lead_id: UUID
     name: str | None
@@ -171,6 +181,7 @@ class FollowUpSequenceResponse(BaseModel):
 
 class EscalationRequest(BaseModel):
     """Request human escalation for a conversation."""
+
     lead_id: UUID
     conversation_id: UUID | None = None
     reason: str

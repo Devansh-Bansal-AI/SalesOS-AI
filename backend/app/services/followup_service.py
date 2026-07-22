@@ -132,6 +132,7 @@ class FollowUpService:
 
         # Check if lead has replied (state-aware)
         from app.services.conversation_service import ConversationService
+
         conv_service = ConversationService(self.session)
 
         recent_messages = await conv_service.get_recent_lead_messages(
@@ -155,10 +156,12 @@ class FollowUpService:
 
         # Check decision engine (still worth pursuing?)
         from app.services.decision_engine import DecisionEngine
+
         engine = DecisionEngine()
 
         # Get lead data for decision
         from app.repositories.lead_repo import LeadRepository
+
         lead_repo = LeadRepository(self.session)
         lead = await lead_repo.get_by_id_and_org(lead_id, organization_id)
 
@@ -171,9 +174,15 @@ class FollowUpService:
         decision = await engine.evaluate(
             {
                 "score": lead.qualification.get("score", 0) if lead.qualification else 0,
-                "intent": lead.qualification.get("intent", "general") if lead.qualification else "general",
-                "urgency": lead.qualification.get("urgency", "unknown") if lead.qualification else "unknown",
-                "confidence": lead.qualification.get("confidence", 0.5) if lead.qualification else 0.5,
+                "intent": lead.qualification.get("intent", "general")
+                if lead.qualification
+                else "general",
+                "urgency": lead.qualification.get("urgency", "unknown")
+                if lead.qualification
+                else "unknown",
+                "confidence": lead.qualification.get("confidence", 0.5)
+                if lead.qualification
+                else 0.5,
                 "follow_up_count": sequence.current_step,
             },
             organization_id=str(organization_id),
@@ -238,6 +247,7 @@ class FollowUpService:
         sequence = await self.seq_repo.get_by_id_and_org(sequence_id, organization_id)
         if not sequence:
             from app.core.exceptions import NotFoundError
+
             raise NotFoundError("FollowUpSequence", sequence_id)
 
         sequence.status = "cancelled"

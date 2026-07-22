@@ -15,9 +15,7 @@ class LeadScoreRepository(BaseRepository[LeadScore]):
     def __init__(self, session: AsyncSession):
         super().__init__(LeadScore, session)
 
-    async def get_latest_score(
-        self, organization_id: UUID, lead_id: UUID
-    ) -> LeadScore | None:
+    async def get_latest_score(self, organization_id: UUID, lead_id: UUID) -> LeadScore | None:
         """Get the most recent score for a lead."""
         stmt = (
             select(LeadScore)
@@ -31,9 +29,7 @@ class LeadScoreRepository(BaseRepository[LeadScore]):
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 
-    async def get_score_history(
-        self, organization_id: UUID, lead_id: UUID
-    ) -> list[LeadScore]:
+    async def get_score_history(self, organization_id: UUID, lead_id: UUID) -> list[LeadScore]:
         """Get all historical scores for a lead."""
         stmt = (
             select(LeadScore)

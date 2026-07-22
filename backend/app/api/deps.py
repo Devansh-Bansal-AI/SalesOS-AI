@@ -17,6 +17,7 @@ from app.core.security import require_permission, verify_access_token
 @dataclass
 class CurrentUser:
     """Authenticated user context injected into route handlers."""
+
     id: UUID
     organization_id: UUID
     role: str
@@ -54,12 +55,14 @@ def require_role(*roles: str):
         @router.get("/admin", dependencies=[Depends(require_role("admin"))])
         async def admin_endpoint(): ...
     """
+
     async def _check_role(user: CurrentUser = Depends(get_current_user)) -> CurrentUser:
         if user.role not in roles:
             raise AuthorizationError(
                 f"This endpoint requires one of these roles: {', '.join(roles)}"
             )
         return user
+
     return _check_role
 
 
@@ -70,9 +73,11 @@ def require_perm(permission: str):
         @router.post("/leads", dependencies=[Depends(require_perm("leads:create"))])
         async def create_lead(): ...
     """
+
     async def _check_perm(user: CurrentUser = Depends(get_current_user)) -> CurrentUser:
         require_permission(user.role, permission)
         return user
+
     return _check_perm
 
 

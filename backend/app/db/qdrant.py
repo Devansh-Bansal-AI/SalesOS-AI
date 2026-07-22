@@ -4,7 +4,6 @@
 # Strictly encapsulated within app/db — never leaked outside.
 # ============================================================
 
-from typing import Any
 
 from qdrant_client import AsyncQdrantClient
 from qdrant_client.models import Distance, VectorParams
@@ -23,10 +22,12 @@ def get_qdrant_client() -> AsyncQdrantClient:
     if _qdrant_client is None:
         settings = get_settings()
         api_key = settings.QDRANT_API_KEY if settings.QDRANT_API_KEY else None
-        
+
         # Build client connection params
         url_or_host = {}
-        if settings.QDRANT_HOST.startswith("http://") or settings.QDRANT_HOST.startswith("https://"):
+        if settings.QDRANT_HOST.startswith("http://") or settings.QDRANT_HOST.startswith(
+            "https://"
+        ):
             url_or_host["url"] = settings.QDRANT_HOST
         else:
             url_or_host["host"] = settings.QDRANT_HOST

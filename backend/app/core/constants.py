@@ -43,12 +43,12 @@ RATE_LIMIT_WINDOW_SECONDS = 60
 
 # ── Redis TTL (seconds) ───────────────────────────────────
 
-REDIS_TTL_SESSION = 30 * 60           # 30 minutes
-REDIS_TTL_PROMPT_CACHE = 60 * 60      # 1 hour
+REDIS_TTL_SESSION = 30 * 60  # 30 minutes
+REDIS_TTL_PROMPT_CACHE = 60 * 60  # 1 hour
 REDIS_TTL_CONVERSATION_CACHE = 24 * 60 * 60  # 24 hours
-REDIS_TTL_ANALYSIS_CACHE = 60 * 60    # 1 hour
-REDIS_TTL_DASHBOARD_CACHE = 5 * 60    # 5 minutes
-REDIS_TTL_LEAD_LOCK = 5 * 60          # 5 minutes
+REDIS_TTL_ANALYSIS_CACHE = 60 * 60  # 1 hour
+REDIS_TTL_DASHBOARD_CACHE = 5 * 60  # 5 minutes
+REDIS_TTL_LEAD_LOCK = 5 * 60  # 5 minutes
 
 # ── API ────────────────────────────────────────────────────
 

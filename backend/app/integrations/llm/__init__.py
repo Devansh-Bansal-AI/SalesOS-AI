@@ -49,14 +49,17 @@ def get_llm_provider(provider_name: str | None = None) -> LLMProvider:
 
     if provider_name == "gemini":
         from app.integrations.llm.gemini import GeminiProvider
+
         provider = GeminiProvider()
 
     elif provider_name == "openai":
         from app.integrations.llm.openai import OpenAIProvider
+
         provider = OpenAIProvider()
 
     elif provider_name == "claude":
         from app.integrations.llm.claude import ClaudeProvider
+
         provider = ClaudeProvider()
 
     else:

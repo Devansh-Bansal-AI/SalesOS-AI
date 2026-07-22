@@ -24,7 +24,5 @@ class ActivityRepository(BaseRepository[Activity]):
     ) -> tuple[list[Activity], int]:
         """Get activity timeline for a lead, most recent first."""
         filters = [Activity.lead_id == lead_id]
-        items, total = await self.list(
-            organization_id, offset=offset, limit=limit, filters=filters
-        )
+        items, total = await self.list(organization_id, offset=offset, limit=limit, filters=filters)
         return list(items), total

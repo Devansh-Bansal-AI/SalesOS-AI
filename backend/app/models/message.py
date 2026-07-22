@@ -22,10 +22,12 @@ class Message(UUIDPrimaryKeyMixin, Base):
         UUID(as_uuid=True), ForeignKey("organizations.id"), nullable=False
     )
     direction: Mapped[str] = mapped_column(
-        String(20), nullable=False  # 'inbound' or 'outbound'
+        String(20),
+        nullable=False,  # 'inbound' or 'outbound'
     )
     channel: Mapped[str] = mapped_column(
-        String(50), nullable=False  # 'email', 'form', 'api', 'chat', 'sms'
+        String(50),
+        nullable=False,  # 'email', 'form', 'api', 'chat', 'sms'
     )
     sender_email: Mapped[str | None] = mapped_column(String(255), nullable=True)
     recipient_email: Mapped[str | None] = mapped_column(String(255), nullable=True)

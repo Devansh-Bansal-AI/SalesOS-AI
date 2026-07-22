@@ -45,9 +45,7 @@ class EmailRepository(BaseRepository[Email]):
     ) -> tuple[list[Email], int]:
         """Get emails for a specific lead."""
         filters = [Email.lead_id == lead_id]
-        return await self.list(
-            organization_id, offset=offset, limit=limit, filters=filters
-        )
+        return await self.list(organization_id, offset=offset, limit=limit, filters=filters)
 
 
 class FollowUpSequenceRepository(BaseRepository[FollowUpSequence]):

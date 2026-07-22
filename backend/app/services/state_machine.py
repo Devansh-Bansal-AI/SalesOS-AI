@@ -28,31 +28,62 @@ class LeadStateMachine:
     # Defines every valid transition: current_state → [allowed_next_states]
     TRANSITIONS: dict[str, list[str]] = {
         "new": [
-            "qualified", "contacted", "disqualified", "nurture",
+            "qualified",
+            "contacted",
+            "disqualified",
+            "nurture",
         ],
         "contacted": [
-            "qualified", "nurture", "disqualified", "lost",
+            "qualified",
+            "nurture",
+            "disqualified",
+            "lost",
         ],
         "qualified": [
-            "outreach", "meeting_booked", "nurture", "disqualified", "lost",
+            "outreach",
+            "meeting_booked",
+            "nurture",
+            "disqualified",
+            "lost",
         ],
         "outreach": [
-            "conversation", "meeting_booked", "nurture", "disqualified", "lost",
+            "conversation",
+            "meeting_booked",
+            "nurture",
+            "disqualified",
+            "lost",
         ],
         "conversation": [
-            "meeting_booked", "negotiation", "nurture", "disqualified", "lost",
+            "meeting_booked",
+            "negotiation",
+            "nurture",
+            "disqualified",
+            "lost",
         ],
         "nurture": [
-            "contacted", "qualified", "outreach", "disqualified", "lost",
+            "contacted",
+            "qualified",
+            "outreach",
+            "disqualified",
+            "lost",
         ],
         "meeting_booked": [
-            "demo", "conversation", "negotiation", "disqualified", "lost",
+            "demo",
+            "conversation",
+            "negotiation",
+            "disqualified",
+            "lost",
         ],
         "demo": [
-            "negotiation", "converted", "nurture", "lost",
+            "negotiation",
+            "converted",
+            "nurture",
+            "lost",
         ],
         "negotiation": [
-            "converted", "lost", "demo",
+            "converted",
+            "lost",
+            "demo",
         ],
         "converted": [
             # Terminal state — but can reopen
@@ -60,7 +91,8 @@ class LeadStateMachine:
         ],
         "lost": [
             # Terminal state — but can reopen
-            "nurture", "new",
+            "nurture",
+            "new",
         ],
         "disqualified": [
             # Terminal state — but can reopen
@@ -86,9 +118,15 @@ class LeadStateMachine:
 
     # Stage ordering for pipeline visualization
     PIPELINE_ORDER: list[str] = [
-        "new", "contacted", "qualified", "outreach",
-        "conversation", "meeting_booked", "demo",
-        "negotiation", "converted",
+        "new",
+        "contacted",
+        "qualified",
+        "outreach",
+        "conversation",
+        "meeting_booked",
+        "demo",
+        "negotiation",
+        "converted",
     ]
 
     TERMINAL_STATES: set[str] = {"converted", "lost", "disqualified"}
@@ -104,8 +142,7 @@ class LeadStateMachine:
         allowed = self.TRANSITIONS[current]
         if target not in allowed:
             raise ValidationError(
-                f"Cannot transition from '{current}' to '{target}'. "
-                f"Allowed: {', '.join(allowed)}",
+                f"Cannot transition from '{current}' to '{target}'. Allowed: {', '.join(allowed)}",
                 field="status",
             )
 
@@ -123,10 +160,7 @@ class LeadStateMachine:
 
     def get_pipeline_stages(self) -> list[dict[str, str]]:
         """Get ordered pipeline stages for UI visualization."""
-        return [
-            {"key": s, "label": self.get_label(s)}
-            for s in self.PIPELINE_ORDER
-        ]
+        return [{"key": s, "label": self.get_label(s)} for s in self.PIPELINE_ORDER]
 
 
 # Module-level singleton

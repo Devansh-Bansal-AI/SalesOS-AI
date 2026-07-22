@@ -55,9 +55,7 @@ class GeminiProvider(LLMProvider):
                     gemini_messages.append({"role": "model", "parts": [msg.content]})
 
             if system_instruction:
-                model = genai.GenerativeModel(
-                    model_name, system_instruction=system_instruction
-                )
+                model = genai.GenerativeModel(model_name, system_instruction=system_instruction)
 
             generation_config = genai.GenerationConfig(
                 temperature=config.temperature,
@@ -125,6 +123,7 @@ class GeminiProvider(LLMProvider):
         response = await self.generate(enhanced_messages, config)
 
         import json
+
         try:
             parsed = output_schema.model_validate_json(response.content)
         except Exception:

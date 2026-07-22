@@ -54,10 +54,9 @@ async def handle_inbound_message(event: DomainEvent, session) -> None:
     try:
         # Load lead context
         from app.repositories.lead_repo import LeadRepository
+
         lead_repo = LeadRepository(session)
-        lead = await lead_repo.get_by_id_and_org(
-            UUID(lead_id), event.organization_id
-        )
+        lead = await lead_repo.get_by_id_and_org(UUID(lead_id), event.organization_id)
 
         if not lead:
             logger.warning("lead_not_found_for_analysis", lead_id=lead_id)
@@ -69,8 +68,7 @@ async def handle_inbound_message(event: DomainEvent, session) -> None:
             event.organization_id, UUID(lead_id), limit=5
         )
         history = "\n".join(
-            f"[{m.direction}] {m.body_text[:200] if m.body_text else ''}"
-            for m in recent
+            f"[{m.direction}] {m.body_text[:200] if m.body_text else ''}" for m in recent
         )
 
         # Run Conversation Intelligence Agent

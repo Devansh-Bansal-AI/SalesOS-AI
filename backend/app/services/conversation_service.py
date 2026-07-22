@@ -78,6 +78,7 @@ class ConversationService:
         conv = await self.conv_repo.get_by_id_and_org(conversation_id, organization_id)
         if not conv:
             from app.core.exceptions import NotFoundError
+
             raise NotFoundError("Conversation", conversation_id)
         return self._to_response(conv)
 
@@ -106,11 +107,10 @@ class ConversationService:
         agent_run_id: UUID | None = None,
     ) -> MessageResponse:
         """Add a message to a conversation."""
-        conversation = await self.conv_repo.get_by_id_and_org(
-            conversation_id, organization_id
-        )
+        conversation = await self.conv_repo.get_by_id_and_org(conversation_id, organization_id)
         if not conversation:
             from app.core.exceptions import NotFoundError
+
             raise NotFoundError("Conversation", conversation_id)
 
         message = await self.msg_repo.create(
@@ -173,9 +173,7 @@ class ConversationService:
         self, organization_id: UUID, lead_id: UUID, *, limit: int = 10
     ) -> list[MessageResponse]:
         """Get recent messages across all conversations for a lead."""
-        messages = await self.msg_repo.get_recent_by_lead(
-            organization_id, lead_id, limit=limit
-        )
+        messages = await self.msg_repo.get_recent_by_lead(organization_id, lead_id, limit=limit)
         return [self._msg_to_response(m) for m in messages]
 
     # ── Analysis Application ────────────────────────────

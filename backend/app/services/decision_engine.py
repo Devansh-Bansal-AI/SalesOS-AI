@@ -28,11 +28,12 @@ logger = get_logger("decision_engine")
 @dataclass
 class Decision:
     """Result from the decision engine."""
-    action: str              # What to do: qualify, disqualify, enrich, outreach, book, nurture, escalate
-    confidence: float        # How confident (0-1) — deterministic rules always return 1.0
-    reasoning: str           # Human-readable explanation
+
+    action: str  # What to do: qualify, disqualify, enrich, outreach, book, nurture, escalate
+    confidence: float  # How confident (0-1) — deterministic rules always return 1.0
+    reasoning: str  # Human-readable explanation
     parameters: dict[str, Any]  # Action-specific parameters
-    source: str = "rule"     # "rule" or "llm"
+    source: str = "rule"  # "rule" or "llm"
 
 
 # ── Rule Definitions ───────────────────────────────────────
@@ -41,9 +42,10 @@ class Decision:
 @dataclass
 class Rule:
     """A deterministic business rule."""
+
     name: str
     description: str
-    priority: int           # Lower = higher priority (evaluated first)
+    priority: int  # Lower = higher priority (evaluated first)
     enabled: bool = True
 
     def evaluate(self, context: dict[str, Any]) -> Decision | None:
@@ -260,7 +262,9 @@ class DecisionEngine:
                 if not await self.flags.is_enabled("auto_booking", organization_id=organization_id):
                     continue
             elif rule.name == "auto_disqualify":
-                if not await self.flags.is_enabled("auto_disqualify", organization_id=organization_id):
+                if not await self.flags.is_enabled(
+                    "auto_disqualify", organization_id=organization_id
+                ):
                     continue
 
             decision = rule.evaluate(context)
@@ -274,9 +278,7 @@ class DecisionEngine:
                 return decision
 
         # 2. LLM fallback (when no rule matches and flag is enabled)
-        if await self.flags.is_enabled(
-            "llm_fallback_decisions", organization_id=organization_id
-        ):
+        if await self.flags.is_enabled("llm_fallback_decisions", organization_id=organization_id):
             decision = await self._llm_fallback(context)
             if decision:
                 logger.info(
@@ -317,7 +319,7 @@ class DecisionEngine:
                 "- nurture: Add to a nurture sequence\n"
                 "- watch: Add to watch list, re-evaluate later\n"
                 "- escalate: Send to human review\n\n"
-                "Respond with JSON: {\"action\": \"...\", \"confidence\": 0.X, \"reasoning\": \"...\"}"
+                'Respond with JSON: {"action": "...", "confidence": 0.X, "reasoning": "..."}'
             )
 
             user_prompt = (
@@ -340,6 +342,7 @@ class DecisionEngine:
             )
 
             import json
+
             result = json.loads(response.content)
 
             # Validate action is in allowed set

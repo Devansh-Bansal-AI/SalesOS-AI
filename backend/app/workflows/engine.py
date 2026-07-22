@@ -38,7 +38,7 @@ class StepStatus(StrEnum):
     COMPLETED = "completed"
     FAILED = "failed"
     SKIPPED = "skipped"
-    WAITING = "waiting"     # Waiting for external event (e.g., customer reply)
+    WAITING = "waiting"  # Waiting for external event (e.g., customer reply)
 
 
 class WorkflowStatus(StrEnum):
@@ -58,9 +58,10 @@ StepHandler = Callable[["WorkflowContext"], Coroutine[Any, Any, "StepResult"]]
 @dataclass
 class StepResult:
     """Result from executing a workflow step."""
+
     status: StepStatus = StepStatus.COMPLETED
     data: dict[str, Any] = field(default_factory=dict)
-    next_step: str | None = None       # Override the default next step
+    next_step: str | None = None  # Override the default next step
     error: str | None = None
     wait_for_event: str | None = None  # Event type to wait for before resuming
 
@@ -68,13 +69,14 @@ class StepResult:
 @dataclass
 class StepDefinition:
     """A single step in a workflow definition."""
+
     name: str
     handler: StepHandler
-    next_step: str | None = None       # Default next step (None = end)
-    condition: str | None = None       # Optional condition expression
-    on_error: str | None = None        # Step to jump to on error
-    timeout_seconds: int = 300         # Max execution time
-    retries: int = 0                   # Number of retry attempts
+    next_step: str | None = None  # Default next step (None = end)
+    condition: str | None = None  # Optional condition expression
+    on_error: str | None = None  # Step to jump to on error
+    timeout_seconds: int = 300  # Max execution time
+    retries: int = 0  # Number of retry attempts
 
 
 # ── Workflow Context ────────────────────────────────────────
@@ -87,6 +89,7 @@ class WorkflowContext:
     Steps read input from and write output to this context.
     The context is persisted as JSONB in the workflow_instances table.
     """
+
     workflow_id: UUID
     workflow_type: str
     organization_id: UUID
@@ -133,6 +136,7 @@ class WorkflowDefinition:
     Workflows are defined declaratively and registered with the engine.
     An admin can override step order and conditions per-organization.
     """
+
     name: str
     workflow_type: str
     description: str = ""
@@ -386,10 +390,7 @@ class WorkflowEngine:
 
     def list_workflows(self) -> dict[str, list[str]]:
         """List all registered workflows and their steps."""
-        return {
-            wf_type: list(wf_def.steps.keys())
-            for wf_type, wf_def in self._definitions.items()
-        }
+        return {wf_type: list(wf_def.steps.keys()) for wf_type, wf_def in self._definitions.items()}
 
 
 # ── Global Instance ─────────────────────────────────────────

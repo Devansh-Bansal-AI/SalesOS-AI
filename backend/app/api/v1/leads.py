@@ -39,9 +39,7 @@ async def create_lead(
 ):
     """Create a new lead. Triggers qualification workflow automatically."""
     service = LeadService(db)
-    result = await service.create_lead(
-        user.organization_id, request, created_by=user.id
-    )
+    result = await service.create_lead(user.organization_id, request, created_by=user.id)
     return APIResponse(data=result)
 
 
@@ -80,9 +78,7 @@ async def list_leads(
     total_pages = (total + per_page - 1) // per_page
     return APIResponse(
         data=items,
-        meta=PaginationMeta(
-            page=page, per_page=per_page, total=total, total_pages=total_pages
-        ),
+        meta=PaginationMeta(page=page, per_page=per_page, total=total, total_pages=total_pages),
     )
 
 
@@ -121,9 +117,7 @@ async def update_lead(
 ):
     """Update lead fields."""
     service = LeadService(db)
-    result = await service.update_lead(
-        user.organization_id, lead_id, request, updated_by=user.id
-    )
+    result = await service.update_lead(user.organization_id, lead_id, request, updated_by=user.id)
     return APIResponse(data=result)
 
 
@@ -208,7 +202,5 @@ async def get_lead_timeline(
     total_pages = (total + per_page - 1) // per_page
     return APIResponse(
         data=items,
-        meta=PaginationMeta(
-            page=page, per_page=per_page, total=total, total_pages=total_pages
-        ),
+        meta=PaginationMeta(page=page, per_page=per_page, total=total, total_pages=total_pages),
     )

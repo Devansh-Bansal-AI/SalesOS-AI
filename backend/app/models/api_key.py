@@ -22,12 +22,8 @@ class APIKey(UUIDPrimaryKeyMixin, Base):
     key_hash: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     key_prefix: Mapped[str] = mapped_column(String(10), nullable=False)
     scopes: Mapped[list[str]] = mapped_column(ARRAY(String), nullable=False, default=list)
-    expires_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
-    last_used_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
+    expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    last_used_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     created_by: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("users.id"), nullable=False

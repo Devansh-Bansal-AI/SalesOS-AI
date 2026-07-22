@@ -33,6 +33,4 @@ class DomainEvent(UUIDPrimaryKeyMixin, Base):
         DateTime(timezone=True), nullable=False, server_default="now()"
     )
     processed: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
-    processed_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
+    processed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)

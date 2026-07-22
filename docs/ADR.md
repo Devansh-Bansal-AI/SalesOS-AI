@@ -9,7 +9,7 @@ This document records the foundational architectural decisions that govern **Sal
 - **Status**: **Accepted & Frozen**
 - **Context**: Sales Operations workflows require reliable, multi-step execution with pause/resume capabilities (e.g. waiting for a customer email reply).
 - **Decision**: The Workflow Engine (`app/workflows/engine.py`) orchestrates all business processes using deterministic Python code. AI graph orchestrators (such as LangGraph) operate *inside* agent execution nodes, never at the top-level business process layer.
-- **Consequences**: Guaranteed reliability, zero workflow hallunication, step-by-step state persistence in `workflow_instances` JSONB.
+- **Consequences**: Guaranteed reliability, zero workflow hallucination, step-by-step state persistence in `workflow_instances` JSONB.
 
 ---
 

@@ -20,6 +20,7 @@ logger = get_logger("llm")
 @dataclass
 class LLMResponse:
     """Standardized response from any LLM provider."""
+
     content: str
     model: str
     provider: str
@@ -40,6 +41,7 @@ class LLMResponse:
 @dataclass
 class LLMMessage:
     """A single message in a conversation."""
+
     role: str  # "system", "user", "assistant"
     content: str
 
@@ -47,6 +49,7 @@ class LLMMessage:
 @dataclass
 class LLMConfig:
     """Configuration passed to every LLM call."""
+
     model: str = ""
     temperature: float = 0.3
     max_tokens: int = 2048

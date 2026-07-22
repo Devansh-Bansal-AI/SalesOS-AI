@@ -21,7 +21,7 @@
 
 ---
 
-### Milestone 6: Vector Memory, MCP Tools & Analytics — `[IN PROGRESS]`
+### Milestone 6: Vector Memory, MCP Tools & Analytics — `[COMPLETED]`
 - **Task 6.1**: Qdrant vector client (`app/db/qdrant.py`) & `QdrantKnowledgeBaseProvider` (`app/agents/tools/qdrant_kb.py`).
 - **Task 6.2**: Concrete `CompanyResearchToolProvider` & `CalendarToolProvider` implementations.
 - **Task 6.3**: Analytics API router (`app/api/v1/analytics.py`) & metrics aggregation.

@@ -35,6 +35,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 def hash_api_key(api_key: str) -> str:
     """Hash an API key using SHA-256 for storage and lookup."""
     import hashlib
+
     return hashlib.sha256(api_key.encode()).hexdigest()
 
 
@@ -134,42 +135,78 @@ class Role(StrEnum):
 # Missing entries default to False.
 PERMISSIONS: dict[str, set[str]] = {
     Role.ADMIN: {
-        "leads:create", "leads:read", "leads:read_all", "leads:update", "leads:delete",
-        "leads:assign", "leads:qualify", "leads:enrich",
-        "conversations:read", "conversations:analyze",
-        "emails:send", "emails:read",
-        "meetings:create", "meetings:read", "meetings:update", "meetings:delete",
-        "analytics:read", "analytics:read_full",
-        "agents:configure", "agents:read",
-        "users:create", "users:read", "users:update", "users:delete",
-        "api_keys:create", "api_keys:delete",
+        "leads:create",
+        "leads:read",
+        "leads:read_all",
+        "leads:update",
+        "leads:delete",
+        "leads:assign",
+        "leads:qualify",
+        "leads:enrich",
+        "conversations:read",
+        "conversations:analyze",
+        "emails:send",
+        "emails:read",
+        "meetings:create",
+        "meetings:read",
+        "meetings:update",
+        "meetings:delete",
+        "analytics:read",
+        "analytics:read_full",
+        "agents:configure",
+        "agents:read",
+        "users:create",
+        "users:read",
+        "users:update",
+        "users:delete",
+        "api_keys:create",
+        "api_keys:delete",
         "audit:read",
         "org:update",
         "decisions:override",
     },
     Role.MANAGER: {
-        "leads:create", "leads:read", "leads:read_all", "leads:update",
-        "leads:assign", "leads:qualify", "leads:enrich",
-        "conversations:read", "conversations:analyze",
-        "emails:send", "emails:read",
-        "meetings:create", "meetings:read", "meetings:update", "meetings:delete",
-        "analytics:read", "analytics:read_full",
+        "leads:create",
+        "leads:read",
+        "leads:read_all",
+        "leads:update",
+        "leads:assign",
+        "leads:qualify",
+        "leads:enrich",
+        "conversations:read",
+        "conversations:analyze",
+        "emails:send",
+        "emails:read",
+        "meetings:create",
+        "meetings:read",
+        "meetings:update",
+        "meetings:delete",
+        "analytics:read",
+        "analytics:read_full",
         "agents:read",
         "users:read",
         "audit:read",
         "decisions:override",
     },
     Role.SALES_REP: {
-        "leads:create", "leads:read", "leads:update",
-        "leads:qualify", "leads:enrich",
-        "conversations:read", "conversations:analyze",
-        "emails:send", "emails:read",
-        "meetings:create", "meetings:read", "meetings:update",
+        "leads:create",
+        "leads:read",
+        "leads:update",
+        "leads:qualify",
+        "leads:enrich",
+        "conversations:read",
+        "conversations:analyze",
+        "emails:send",
+        "emails:read",
+        "meetings:create",
+        "meetings:read",
+        "meetings:update",
         "analytics:read",
         "decisions:override",
     },
     Role.VIEWER: {
-        "leads:read", "leads:read_all",
+        "leads:read",
+        "leads:read_all",
         "conversations:read",
         "emails:read",
         "meetings:read",
@@ -188,6 +225,4 @@ def check_permission(role: str, permission: str) -> bool:
 def require_permission(role: str, permission: str) -> None:
     """Enforce permission. Raises AuthorizationError if denied."""
     if not check_permission(role, permission):
-        raise AuthorizationError(
-            f"Role '{role}' does not have permission '{permission}'"
-        )
+        raise AuthorizationError(f"Role '{role}' does not have permission '{permission}'")

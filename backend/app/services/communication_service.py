@@ -85,10 +85,12 @@ class CommunicationService:
         """
         # Get lead email
         from app.repositories.lead_repo import LeadRepository
+
         lead_repo = LeadRepository(self.session)
         lead = await lead_repo.get_by_id_and_org(request.lead_id, organization_id)
         if not lead:
             from app.core.exceptions import NotFoundError
+
             raise NotFoundError("Lead", request.lead_id)
 
         to_email = lead.email
@@ -281,9 +283,7 @@ class CommunicationService:
                     message=body_text[:500] if body_text else None,
                 ),
             )
-            lead = await lead_repo.get_by_id_and_org(
-                lead_response.id, organization_id
-            )
+            lead = await lead_repo.get_by_id_and_org(lead_response.id, organization_id)
 
         conversation = await self.conv_service.get_or_create_conversation(
             organization_id,
@@ -323,6 +323,7 @@ class CommunicationService:
 
     def _get_default_from_email(self) -> str:
         from app.core.config import get_settings
+
         return get_settings().SMTP_FROM_EMAIL
 
     def _email_to_response(self, email: Email) -> EmailResponse:

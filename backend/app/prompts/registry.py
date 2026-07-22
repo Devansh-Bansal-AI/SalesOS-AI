@@ -23,6 +23,7 @@ logger = get_logger("prompt_registry")
 
 class PromptVersion(BaseModel):
     """A single version of a prompt template."""
+
     version: str
     system_prompt: str
     user_prompt_template: str
@@ -33,6 +34,7 @@ class PromptVersion(BaseModel):
 
 class PromptRegistration(BaseModel):
     """Metadata about a registered prompt."""
+
     name: str
     agent_type: str
     description: str = ""
@@ -85,9 +87,7 @@ class PromptRegistry:
         registration = self._prompts[name]
 
         # Check if version already exists
-        existing = next(
-            (v for v in registration.versions if v.version == version), None
-        )
+        existing = next((v for v in registration.versions if v.version == version), None)
         if existing:
             # Update existing version
             existing.system_prompt = system_prompt
@@ -134,9 +134,7 @@ class PromptRegistry:
             None,
         )
         if not version:
-            raise KeyError(
-                f"Active version '{registration.active_version}' not found for '{name}'"
-            )
+            raise KeyError(f"Active version '{registration.active_version}' not found for '{name}'")
 
         return version.system_prompt, version.user_prompt_template
 
@@ -249,26 +247,34 @@ def register_all_prompts() -> None:
     )
 
     _registry.register(
-        "qualification", "v1",
-        QUALIFICATION_SYSTEM_PROMPT, QUALIFICATION_USER_PROMPT,
+        "qualification",
+        "v1",
+        QUALIFICATION_SYSTEM_PROMPT,
+        QUALIFICATION_USER_PROMPT,
         agent_type="qualification",
         description="Lead scoring and qualification (initial version)",
     )
     _registry.register(
-        "conversation_intelligence", "v1",
-        CONVERSATION_INTELLIGENCE_SYSTEM_PROMPT, CONVERSATION_INTELLIGENCE_USER_PROMPT,
+        "conversation_intelligence",
+        "v1",
+        CONVERSATION_INTELLIGENCE_SYSTEM_PROMPT,
+        CONVERSATION_INTELLIGENCE_USER_PROMPT,
         agent_type="conversation_intelligence",
         description="9-dimension conversation analysis with memory",
     )
     _registry.register(
-        "outreach", "v1",
-        OUTREACH_SYSTEM_PROMPT, OUTREACH_USER_PROMPT,
+        "outreach",
+        "v1",
+        OUTREACH_SYSTEM_PROMPT,
+        OUTREACH_USER_PROMPT,
         agent_type="outreach",
         description="Personalized outreach email generation",
     )
     _registry.register(
-        "booking", "v1",
-        BOOKING_SYSTEM_PROMPT, BOOKING_USER_PROMPT,
+        "booking",
+        "v1",
+        BOOKING_SYSTEM_PROMPT,
+        BOOKING_USER_PROMPT,
         agent_type="booking",
         description="Meeting setup recommendation",
     )

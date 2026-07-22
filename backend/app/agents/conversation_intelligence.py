@@ -26,6 +26,7 @@ from app.prompts.conversation_intelligence_v1 import (
 
 class ConversationIntelligenceInput(BaseModel):
     """Input to the Conversation Intelligence Agent."""
+
     message_id: str
     sender_email: str
     subject: str | None = None
@@ -47,9 +48,8 @@ class ConversationIntelligenceInput(BaseModel):
 
 class ConversationIntelligenceOutput(BaseModel):
     """Structured output with all 9 analysis dimensions."""
-    sentiment: str = Field(
-        ..., pattern="^(very_positive|positive|neutral|negative|very_negative)$"
-    )
+
+    sentiment: str = Field(..., pattern="^(very_positive|positive|neutral|negative|very_negative)$")
     intent: str = Field(
         ...,
         pattern="^(question|feedback|objection|interest|commitment|complaint|cancellation|referral)$",
@@ -99,9 +99,7 @@ class ConversationIntelligenceAgent(
                 limit=3,
             )
             if memories:
-                memory_context = "\n".join(
-                    f"- {m.get('text', '')}" for m in memories
-                )
+                memory_context = "\n".join(f"- {m.get('text', '')}" for m in memories)
         except RuntimeError:
             # Knowledge base not registered yet
             pass
@@ -142,6 +140,7 @@ class ConversationIntelligenceAgent(
         if output.memory_update:
             try:
                 from app.core.feature_flags import get_feature_flags
+
                 flags = get_feature_flags()
                 if await flags.is_enabled(
                     "conversation_memory",

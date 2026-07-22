@@ -116,9 +116,7 @@ class AgentConfig(UUIDPrimaryKeyMixin, Base):
     max_tokens: Mapped[int] = mapped_column(Integer, nullable=False, default=2048)
     confidence_threshold: Mapped[float] = mapped_column(Float, nullable=False, default=0.7)
     custom_prompt: Mapped[str | None] = mapped_column(Text, nullable=True)
-    tools_enabled: Mapped[list[str]] = mapped_column(
-        ARRAY(String), nullable=False, default=list
-    )
+    tools_enabled: Mapped[list[str]] = mapped_column(ARRAY(String), nullable=False, default=list)
     settings: Mapped[dict] = mapped_column(JSONB, nullable=False, default=dict)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default="now()"

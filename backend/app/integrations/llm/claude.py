@@ -29,6 +29,7 @@ class ClaudeProvider(LLMProvider):
             raise LLMError("claude", "ANTHROPIC_API_KEY not configured")
 
         from anthropic import AsyncAnthropic
+
         self._client = AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY)
         self._default_model = settings.ANTHROPIC_MODEL
 
@@ -113,6 +114,7 @@ class ClaudeProvider(LLMProvider):
         response = await self.generate(enhanced_messages, config)
 
         import json
+
         content = response.content.strip()
         if content.startswith("```"):
             content = content.split("\n", 1)[1].rsplit("```", 1)[0]

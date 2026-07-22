@@ -20,6 +20,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      qdrant:
+        condition: service_healthy
     command: uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
   # ── Celery Worker ──────────────────────────────────────
@@ -37,6 +39,21 @@ services:
       redis:
         condition: service_healthy
     command: celery -A app.tasks.celery_app worker --loglevel=info
+
+  # ── Frontend ───────────────────────────────────────────
+  frontend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.frontend
+    ports:
+      - "3000:3000"
+    env_file:
+      - ../frontend/.env.local
+    volumes:
+      - ../frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
 
   # ── PostgreSQL ─────────────────────────────────────────
   postgres:
@@ -76,8 +93,14 @@ services:
       - "6334:6334"
     volumes:
       - qdrant_data:/qdrant/storage
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:6333/readyz || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres_data:
   redis_data:
   qdrant_data:
+

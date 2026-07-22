@@ -92,6 +92,7 @@ class MeetingService:
 
         # Update lead status if needed
         from app.repositories.lead_repo import LeadRepository
+
         lead_repo = LeadRepository(self.session)
         lead = await lead_repo.get_by_id_and_org(request.lead_id, organization_id)
         if lead and lead.status in ("new", "contacted", "qualified"):
@@ -154,8 +155,12 @@ class MeetingService:
             try:
                 provider = self._registry.get_calendar()
                 await provider.cancel_event(meeting.calendar_event_id)
-            except (ValueError, Exception):
-                pass
+            except (ValueError, Exception) as e:
+                logger.warning(
+                    "calendar_cancel_failed",
+                    meeting_id=str(meeting_id),
+                    error=str(e),
+                )
             await self._sync_to_calendar(meeting)
 
         # CRM activity
@@ -204,8 +209,12 @@ class MeetingService:
             try:
                 provider = self._registry.get_calendar()
                 await provider.cancel_event(meeting.calendar_event_id)
-            except (ValueError, Exception):
-                pass
+            except (ValueError, Exception) as e:
+                logger.warning(
+                    "calendar_cancel_failed",
+                    meeting_id=str(meeting_id),
+                    error=str(e),
+                )
 
         # CRM activity
         await self.crm.log_activity(
@@ -238,9 +247,7 @@ class MeetingService:
 
     # ── Queries ─────────────────────────────────────────
 
-    async def get_meeting(
-        self, organization_id: UUID, meeting_id: UUID
-    ) -> MeetingResponse:
+    async def get_meeting(self, organization_id: UUID, meeting_id: UUID) -> MeetingResponse:
         meeting = await self.repo.get_by_id_and_org(meeting_id, organization_id)
         if not meeting:
             raise NotFoundError("Meeting", meeting_id)
@@ -266,9 +273,7 @@ class MeetingService:
         user_id: UUID | None = None,
         limit: int = 20,
     ) -> list[MeetingListResponse]:
-        items = await self.repo.find_upcoming(
-            organization_id, user_id=user_id, limit=limit
-        )
+        items = await self.repo.find_upcoming(organization_id, user_id=user_id, limit=limit)
         return [self._to_list_response(m) for m in items]
 
     # ── Calendar Sync ───────────────────────────────────
@@ -280,10 +285,9 @@ class MeetingService:
 
             # Get lead email for attendee list
             from app.repositories.lead_repo import LeadRepository
+
             lead_repo = LeadRepository(self.session)
-            lead = await lead_repo.get_by_id_and_org(
-                meeting.lead_id, meeting.organization_id
-            )
+            lead = await lead_repo.get_by_id_and_org(meeting.lead_id, meeting.organization_id)
             attendees = [lead.email] if lead else []
 
             event = CalendarEvent(
@@ -291,8 +295,7 @@ class MeetingService:
                 description=meeting.description,
                 start_time=meeting.scheduled_at.isoformat(),
                 end_time=(
-                    meeting.scheduled_at
-                    + timedelta(minutes=meeting.duration_minutes)
+                    meeting.scheduled_at + timedelta(minutes=meeting.duration_minutes)
                 ).isoformat(),
                 timezone=meeting.timezone,
                 attendees=attendees,

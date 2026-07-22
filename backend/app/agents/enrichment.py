@@ -20,6 +20,7 @@ from app.prompts.enrichment_v1 import (
 
 class EnrichmentInput(BaseModel):
     """Input to the Enrichment Agent."""
+
     email: str
     first_name: str | None = None
     last_name: str | None = None
@@ -35,6 +36,7 @@ class EnrichmentInput(BaseModel):
 
 class CompanyProfile(BaseModel):
     """Enriched company data."""
+
     name: str
     industry: str | None = None
     sub_industry: str | None = None
@@ -48,6 +50,7 @@ class CompanyProfile(BaseModel):
 
 class LeadContext(BaseModel):
     """Enriched lead context."""
+
     seniority_level: str | None = None
     department: str | None = None
     decision_authority: str | None = None
@@ -56,6 +59,7 @@ class LeadContext(BaseModel):
 
 class EnrichmentOutput(BaseModel):
     """Structured output from the Enrichment Agent."""
+
     company_profile: CompanyProfile
     lead_context: LeadContext
     conversation_starters: list[str] = Field(default_factory=list)
@@ -110,9 +114,7 @@ class EnrichmentAgent(BaseAgent[EnrichmentInput, EnrichmentOutput]):
             response_format="json",
         )
 
-        output, response = await self.llm.generate_structured(
-            messages, EnrichmentOutput, config
-        )
+        output, response = await self.llm.generate_structured(messages, EnrichmentOutput, config)
 
         return output
 
@@ -141,15 +143,11 @@ class EnrichmentAgent(BaseAgent[EnrichmentInput, EnrichmentOutput]):
                 # Try tech stack detection
                 tech_stack = await company_tool.detect_tech_stack(domain)
                 if tech_stack:
-                    research_parts.append(
-                        f"Tech Stack: {', '.join(tech_stack)}"
-                    )
+                    research_parts.append(f"Tech Stack: {', '.join(tech_stack)}")
                     data_sources.append("tech_stack_detection")
 
             elif input_data.company_name:
-                company_info = await company_tool.research_by_name(
-                    input_data.company_name
-                )
+                company_info = await company_tool.research_by_name(input_data.company_name)
                 if company_info:
                     research_parts.append(
                         f"Company Research (name: {input_data.company_name}):\n"
@@ -170,8 +168,12 @@ class EnrichmentAgent(BaseAgent[EnrichmentInput, EnrichmentOutput]):
             domain = email.split("@")[1].lower()
             # Skip common personal email domains
             personal_domains = {
-                "gmail.com", "yahoo.com", "hotmail.com", "outlook.com",
-                "aol.com", "icloud.com",
+                "gmail.com",
+                "yahoo.com",
+                "hotmail.com",
+                "outlook.com",
+                "aol.com",
+                "icloud.com",
             }
             return None if domain in personal_domains else domain
         except (IndexError, AttributeError):

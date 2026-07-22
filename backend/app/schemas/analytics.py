@@ -8,6 +8,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 class AnalyticsOverviewResponse(BaseModel):
     """High-level KPI metrics response."""
+
     model_config = ConfigDict(from_attributes=True)
 
     timeframe_days: int = Field(30, description="Timeframe filter in days")
@@ -18,15 +19,20 @@ class AnalyticsOverviewResponse(BaseModel):
     meetings_booked: int = Field(0, description="Total meetings booked")
     estimated_won_revenue: float = Field(0.0, description="Estimated won pipeline revenue")
     estimated_lost_revenue: float = Field(0.0, description="Estimated lost pipeline revenue")
-    sla_health_percentage: float = Field(100.0, description="Percentage of leads compliant with SLA")
+    sla_health_percentage: float = Field(
+        100.0, description="Percentage of leads compliant with SLA"
+    )
 
 
 class PipelineAnalyticsResponse(BaseModel):
     """Pipeline visualization & stage conversion metrics."""
+
     model_config = ConfigDict(from_attributes=True)
 
     timeframe_days: int = Field(30, description="Timeframe filter in days")
-    stage_counts: dict[str, int] = Field(default_factory=dict, description="Counts of leads per stage")
+    stage_counts: dict[str, int] = Field(
+        default_factory=dict, description="Counts of leads per stage"
+    )
     funnel_conversion_rates: dict[str, float] = Field(
         default_factory=dict, description="Stage-to-stage conversion rates"
     )
@@ -38,6 +44,7 @@ class PipelineAnalyticsResponse(BaseModel):
 
 class AgentMetricItem(BaseModel):
     """Generic AI agent performance metrics (no hardcoded agent names)."""
+
     model_config = ConfigDict(from_attributes=True)
 
     agent: str = Field(..., description="Agent type identifier (e.g. qualification, enrichment)")
@@ -50,14 +57,18 @@ class AgentMetricItem(BaseModel):
 
 class AgentAnalyticsResponse(BaseModel):
     """Analytics response for all AI Agents."""
+
     model_config = ConfigDict(from_attributes=True)
 
     timeframe_days: int = Field(30, description="Timeframe filter in days")
-    agents: list[AgentMetricItem] = Field(default_factory=list, description="Performance metrics per agent")
+    agents: list[AgentMetricItem] = Field(
+        default_factory=list, description="Performance metrics per agent"
+    )
 
 
 class SLAAnalyticsResponse(BaseModel):
     """SLA compliance and response metrics."""
+
     model_config = ConfigDict(from_attributes=True)
 
     timeframe_days: int = Field(30, description="Timeframe filter in days")

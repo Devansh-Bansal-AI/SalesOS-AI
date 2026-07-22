@@ -17,6 +17,7 @@ from app.prompts.booking_v1 import BOOKING_SYSTEM_PROMPT, BOOKING_USER_PROMPT
 
 class BookingInput(BaseModel):
     """Input to the Booking Agent."""
+
     email: str
     first_name: str | None = None
     last_name: str | None = None
@@ -42,9 +43,8 @@ class BookingInput(BaseModel):
 
 class BookingOutput(BaseModel):
     """Recommended meeting setup."""
-    meeting_type: str = Field(
-        ..., pattern="^(discovery|demo|follow_up|onboarding|custom)$"
-    )
+
+    meeting_type: str = Field(..., pattern="^(discovery|demo|follow_up|onboarding|custom)$")
     duration_minutes: int = Field(..., ge=15, le=120)
     title: str = Field(..., max_length=200)
     description: str
@@ -96,7 +96,9 @@ class BookingAgent(BaseAgent[BookingInput, BookingOutput]):
             urgency=input_data.urgency or "unknown",
             priority=input_data.priority or "N/A",
             objections=", ".join(input_data.objections) if input_data.objections else "None",
-            buying_signals=", ".join(input_data.buying_signals) if input_data.buying_signals else "None",
+            buying_signals=", ".join(input_data.buying_signals)
+            if input_data.buying_signals
+            else "None",
             customer_stage=input_data.customer_stage,
             conversation_summary=conversation_summary or "No prior conversation",
             timezone=input_data.timezone,
@@ -114,8 +116,6 @@ class BookingAgent(BaseAgent[BookingInput, BookingOutput]):
             response_format="json",
         )
 
-        output, response = await self.llm.generate_structured(
-            messages, BookingOutput, config
-        )
+        output, response = await self.llm.generate_structured(messages, BookingOutput, config)
 
         return output

@@ -12,6 +12,7 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 class RegisterRequest(BaseModel):
     """Organization + admin user registration."""
+
     organization_name: str = Field(..., min_length=2, max_length=255)
     email: EmailStr
     password: str = Field(..., min_length=8, max_length=128)
@@ -21,6 +22,7 @@ class RegisterRequest(BaseModel):
 
 class RegisterResponse(BaseModel):
     """Registration response with tokens."""
+
     user_id: UUID
     organization_id: UUID
     access_token: str
@@ -36,12 +38,14 @@ class RegisterResponse(BaseModel):
 
 class LoginRequest(BaseModel):
     """Login credentials."""
+
     email: EmailStr
     password: str
 
 
 class LoginResponse(BaseModel):
     """Login response with tokens."""
+
     access_token: str
     refresh_token: str
     token_type: str = "bearer"
@@ -54,11 +58,13 @@ class LoginResponse(BaseModel):
 
 class RefreshRequest(BaseModel):
     """Token refresh request."""
+
     refresh_token: str
 
 
 class TokenResponse(BaseModel):
     """New token pair."""
+
     access_token: str
     refresh_token: str
     token_type: str = "bearer"
@@ -82,6 +88,7 @@ class ResetPasswordRequest(BaseModel):
 
 class UserProfile(BaseModel):
     """Current user profile."""
+
     id: UUID
     email: str
     first_name: str

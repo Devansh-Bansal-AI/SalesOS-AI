@@ -8,6 +8,7 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import CurrentUser, get_current_user, require_perm
+from app.core.logging import get_logger
 from app.db.session import get_db
 from app.schemas.common import APIResponse, PaginationMeta
 from app.schemas.communication import (
@@ -20,6 +21,7 @@ from app.schemas.communication import (
 )
 
 router = APIRouter(tags=["Communication"])
+logger = get_logger("api.conversations")
 
 
 # ── Conversations ───────────────────────────────────────────
@@ -48,9 +50,7 @@ async def list_lead_conversations(
     total_pages = (total + per_page - 1) // per_page
     return APIResponse(
         data=items,
-        meta=PaginationMeta(
-            page=page, per_page=per_page, total=total, total_pages=total_pages
-        ),
+        meta=PaginationMeta(page=page, per_page=per_page, total=total, total_pages=total_pages),
     )
 
 
@@ -89,15 +89,11 @@ async def get_conversation_messages(
 
     service = ConversationService(db)
     offset = (page - 1) * per_page
-    items, total = await service.get_messages(
-        conversation_id, offset=offset, limit=per_page
-    )
+    items, total = await service.get_messages(conversation_id, offset=offset, limit=per_page)
     total_pages = (total + per_page - 1) // per_page
     return APIResponse(
         data=items,
-        meta=PaginationMeta(
-            page=page, per_page=per_page, total=total, total_pages=total_pages
-        ),
+        meta=PaginationMeta(page=page, per_page=per_page, total=total, total_pages=total_pages),
     )
 
 
@@ -143,24 +139,29 @@ async def receive_inbound_email(
     This endpoint does NOT require JWT auth — it uses webhook
     signature validation (provider-specific, added in production).
     """
-    # TODO: Validate webhook signature per provider
-    # For now, we process all inbound emails
+    # FIXME(v1.1): Validate webhook signature per provider (SendGrid, Postmark, etc.)
+    # Currently no signature verification — all inbound emails are processed.
+    # In production, implement HMAC/RSA signature validation before processing.
+    logger.warning("webhook_signature_not_validated", provider="email")
+
     # Resolve organization from the to_email domain
     # In production, this would be a lookup table mapping
     # receiving addresses to organizations
     from app.core.config import get_settings
     from app.services.communication_service import CommunicationService
+
     settings = get_settings()
 
-    # Temporary: use a default org (production will do domain lookup)
-    # This will be properly resolved via org-specific email addresses
+    # FIXME(v1.1): Resolve organization_id from to_email domain.
+    # Requires an org-email mapping table (e.g., org_email_domains).
+    # Until then, inbound webhooks cannot route to the correct tenant.
     service = CommunicationService(db)
 
     # Process the inbound message
     # The conversation event handler will trigger analysis
     message_id = await service.process_inbound_email(
-        # organization_id will come from domain lookup in production
-        organization_id=None,  # type: ignore  # TODO: resolve from to_email
+        # FIXME(v1.1): organization_id must come from domain lookup
+        organization_id=None,  # type: ignore
         from_email=payload.from_email,
         to_email=payload.to_email,
         subject=payload.subject,

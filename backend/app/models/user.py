@@ -14,9 +14,7 @@ from app.db.base import Base, SoftDeleteMixin, TimestampMixin, UUIDPrimaryKeyMix
 
 class User(UUIDPrimaryKeyMixin, TimestampMixin, SoftDeleteMixin, Base):
     __tablename__ = "users"
-    __table_args__ = (
-        UniqueConstraint("organization_id", "email", name="uq_users_org_email"),
-    )
+    __table_args__ = (UniqueConstraint("organization_id", "email", name="uq_users_org_email"),)
 
     organization_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("organizations.id"), nullable=False
@@ -28,9 +26,7 @@ class User(UUIDPrimaryKeyMixin, TimestampMixin, SoftDeleteMixin, Base):
     role: Mapped[str] = mapped_column(String(50), nullable=False, default="sales_rep")
     avatar_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
-    last_login_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
+    last_login_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     # Relationships
     organization = relationship("Organization", back_populates="users", lazy="joined")

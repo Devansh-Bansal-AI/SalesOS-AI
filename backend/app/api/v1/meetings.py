@@ -36,9 +36,7 @@ async def book_meeting(
     from app.services.meeting_service import MeetingService
 
     service = MeetingService(db)
-    result = await service.book_meeting(
-        user.organization_id, request, host_user_id=user.id
-    )
+    result = await service.book_meeting(user.organization_id, request, host_user_id=user.id)
     return APIResponse(data=result)
 
 
@@ -58,9 +56,7 @@ async def list_upcoming_meetings(
 
     service = MeetingService(db)
     user_id = user.id if my_only else None
-    items = await service.list_upcoming(
-        user.organization_id, user_id=user_id, limit=limit
-    )
+    items = await service.list_upcoming(user.organization_id, user_id=user_id, limit=limit)
     return APIResponse(data=items)
 
 
@@ -97,9 +93,7 @@ async def reschedule_meeting(
     from app.services.meeting_service import MeetingService
 
     service = MeetingService(db)
-    result = await service.reschedule_meeting(
-        user.organization_id, meeting_id, request
-    )
+    result = await service.reschedule_meeting(user.organization_id, meeting_id, request)
     return APIResponse(data=result)
 
 
@@ -118,9 +112,7 @@ async def cancel_meeting(
     from app.services.meeting_service import MeetingService
 
     service = MeetingService(db)
-    result = await service.cancel_meeting(
-        user.organization_id, meeting_id, request
-    )
+    result = await service.cancel_meeting(user.organization_id, meeting_id, request)
     return APIResponse(data=result)
 
 
@@ -147,7 +139,5 @@ async def list_lead_meetings(
     total_pages = (total + per_page - 1) // per_page
     return APIResponse(
         data=items,
-        meta=PaginationMeta(
-            page=page, per_page=per_page, total=total, total_pages=total_pages
-        ),
+        meta=PaginationMeta(page=page, per_page=per_page, total=total, total_pages=total_pages),
     )

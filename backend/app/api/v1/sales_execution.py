@@ -42,9 +42,7 @@ async def create_activity(
     from app.services.activity_service import ActivityService
 
     service = ActivityService(db)
-    result = await service.create_activity(
-        user.organization_id, request, user_id=user.id
-    )
+    result = await service.create_activity(user.organization_id, request, user_id=user.id)
     return APIResponse(data=result)
 
 
@@ -67,15 +65,12 @@ async def get_lead_activities(
     service = ActivityService(db)
     offset = (page - 1) * per_page
     items, total = await service.get_lead_timeline(
-        user.organization_id, lead_id,
-        activity_type=activity_type, offset=offset, limit=per_page
+        user.organization_id, lead_id, activity_type=activity_type, offset=offset, limit=per_page
     )
     total_pages = (total + per_page - 1) // per_page
     return APIResponse(
         data=items,
-        meta=PaginationMeta(
-            page=page, per_page=per_page, total=total, total_pages=total_pages
-        ),
+        meta=PaginationMeta(page=page, per_page=per_page, total=total, total_pages=total_pages),
     )
 
 
@@ -115,9 +110,7 @@ async def auto_assign_lead(
     from app.services.assignment_engine import AssignmentEngine
 
     engine = AssignmentEngine(db)
-    result = await engine.assign(
-        user.organization_id, lead_id, config
-    )
+    result = await engine.assign(user.organization_id, lead_id, config)
     return APIResponse(data=result)
 
 

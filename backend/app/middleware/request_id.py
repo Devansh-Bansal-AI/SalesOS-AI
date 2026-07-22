@@ -14,9 +14,7 @@ from starlette.responses import Response
 class RequestIDMiddleware(BaseHTTPMiddleware):
     """Assigns a unique request ID to every request for distributed tracing."""
 
-    async def dispatch(
-        self, request: Request, call_next: RequestResponseEndpoint
-    ) -> Response:
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         request_id = request.headers.get("X-Request-ID", str(uuid.uuid4()))
 
         # Bind request ID to structlog context for all logs in this request

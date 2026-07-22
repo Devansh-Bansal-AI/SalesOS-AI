@@ -21,20 +21,15 @@ class Conversation(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     lead_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("leads.id"), nullable=False, index=True
     )
-    status: Mapped[str] = mapped_column(
-        String(50), nullable=False, default="active"
-    )
-    channel: Mapped[str] = mapped_column(
-        String(50), nullable=False, default="email"
-    )
+    status: Mapped[str] = mapped_column(String(50), nullable=False, default="active")
+    channel: Mapped[str] = mapped_column(String(50), nullable=False, default="email")
     subject: Mapped[str | None] = mapped_column(String(500), nullable=True)
     summary: Mapped[str | None] = mapped_column(Text, nullable=True)
     message_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
-    last_message_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
+    last_message_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     # Relationships
     lead = relationship("Lead", back_populates="conversations")
-    messages = relationship("Message", back_populates="conversation", lazy="selectin",
-                            order_by="Message.created_at")
+    messages = relationship(
+        "Message", back_populates="conversation", lazy="selectin", order_by="Message.created_at"
+    )

@@ -28,6 +28,7 @@ logger = get_logger("telemetry")
 @dataclass
 class TelemetryEvent:
     """Structured telemetry event emitted by every agent execution."""
+
     # Identifiers
     request_id: str = ""
     workflow_id: str = ""
@@ -58,6 +59,52 @@ class TelemetryEvent:
 
     # Custom dimensions
     metadata: dict[str, Any] = field(default_factory=dict)
+
+
+# ── Prometheus Metrics (lazy singletons) ───────────────────
+
+_prometheus_metrics: dict[str, Any] | None = None
+
+
+def _get_prometheus_metrics() -> dict[str, Any] | None:
+    """Lazily initialize Prometheus metrics once.
+
+    Returns None if prometheus_client is unavailable.
+    Avoids re-registration warnings from creating Counter/Histogram per call.
+    """
+    global _prometheus_metrics
+    if _prometheus_metrics is not None:
+        return _prometheus_metrics
+
+    try:
+        from prometheus_client import Counter, Histogram
+
+        _prometheus_metrics = {
+            "agent_counter": Counter(
+                "salesos_agent_executions_total",
+                "Total agent executions",
+                ["agent_type", "success", "organization_id"],
+            ),
+            "agent_latency": Histogram(
+                "salesos_agent_latency_ms",
+                "Agent execution latency in milliseconds",
+                ["agent_type"],
+                buckets=[50, 100, 250, 500, 1000, 2500, 5000, 10000],
+            ),
+            "token_counter": Counter(
+                "salesos_llm_tokens_total",
+                "Total LLM tokens used",
+                ["agent_type", "llm_provider", "token_type"],
+            ),
+            "cost_counter": Counter(
+                "salesos_llm_cost_usd_total",
+                "Total estimated LLM cost in USD",
+                ["agent_type", "llm_provider"],
+            ),
+        }
+        return _prometheus_metrics
+    except Exception:
+        return None
 
 
 # ── Telemetry Emitter ───────────────────────────────────────
@@ -107,53 +154,32 @@ class TelemetryEmitter:
     def _emit_prometheus(self, event: TelemetryEvent) -> None:
         """Update Prometheus counters/histograms."""
         try:
-            from prometheus_client import Counter, Histogram
+            metrics = _get_prometheus_metrics()
+            if metrics is None:
+                return
 
-            # Agent execution counter
-            agent_counter = Counter(
-                "salesos_agent_executions_total",
-                "Total agent executions",
-                ["agent_type", "success", "organization_id"],
-            )
-            agent_counter.labels(
+            metrics["agent_counter"].labels(
                 agent_type=event.agent_type,
                 success=str(event.success),
                 organization_id=event.organization_id,
             ).inc()
 
-            # Agent latency histogram
-            agent_latency = Histogram(
-                "salesos_agent_latency_ms",
-                "Agent execution latency in milliseconds",
-                ["agent_type"],
-                buckets=[50, 100, 250, 500, 1000, 2500, 5000, 10000],
-            )
-            agent_latency.labels(agent_type=event.agent_type).observe(event.latency_ms)
+            metrics["agent_latency"].labels(
+                agent_type=event.agent_type,
+            ).observe(event.latency_ms)
 
-            # Token usage counter
-            token_counter = Counter(
-                "salesos_llm_tokens_total",
-                "Total LLM tokens used",
-                ["agent_type", "llm_provider", "token_type"],
-            )
-            token_counter.labels(
+            metrics["token_counter"].labels(
                 agent_type=event.agent_type,
                 llm_provider=event.llm_provider,
                 token_type="prompt",
             ).inc(event.prompt_tokens)
-            token_counter.labels(
+            metrics["token_counter"].labels(
                 agent_type=event.agent_type,
                 llm_provider=event.llm_provider,
                 token_type="completion",
             ).inc(event.completion_tokens)
 
-            # Cost counter
-            cost_counter = Counter(
-                "salesos_llm_cost_usd_total",
-                "Total estimated LLM cost in USD",
-                ["agent_type", "llm_provider"],
-            )
-            cost_counter.labels(
+            metrics["cost_counter"].labels(
                 agent_type=event.agent_type,
                 llm_provider=event.llm_provider,
             ).inc(event.estimated_cost_usd)
@@ -201,9 +227,7 @@ class TelemetryEmitter:
             raise
         finally:
             event.completed_at = time.perf_counter()
-            event.latency_ms = int(
-                (event.completed_at - event.started_at) * 1000
-            )
+            event.latency_ms = int((event.completed_at - event.started_at) * 1000)
             self.emit(event)
 
 

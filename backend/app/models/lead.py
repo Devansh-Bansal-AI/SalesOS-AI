@@ -80,11 +80,13 @@ class Lead(UUIDPrimaryKeyMixin, TimestampMixin, SoftDeleteMixin, Base):
 
     # Relationships
     company = relationship("Company", lazy="joined")
-    scores = relationship("LeadScore", back_populates="lead", lazy="selectin",
-                          order_by="LeadScore.created_at.desc()")
+    scores = relationship(
+        "LeadScore", back_populates="lead", lazy="selectin", order_by="LeadScore.created_at.desc()"
+    )
     conversations = relationship("Conversation", back_populates="lead", lazy="noload")
-    activities = relationship("Activity", back_populates="lead", lazy="noload",
-                              order_by="Activity.created_at.desc()")
+    activities = relationship(
+        "Activity", back_populates="lead", lazy="noload", order_by="Activity.created_at.desc()"
+    )
 
     @property
     def full_name(self) -> str:

@@ -92,15 +92,12 @@ class SLAService:
         # First response violations: leads never contacted, created > threshold ago
         first_response_cutoff = now - timedelta(minutes=config.first_response_minutes)
 
-        stmt_first = (
-            select(Lead)
-            .where(
-                Lead.organization_id == organization_id,
-                Lead.last_contacted_at.is_(None),
-                Lead.created_at <= first_response_cutoff,
-                Lead.status.in_(["new", "contacted", "qualified"]),
-                Lead.deleted_at.is_(None),
-            )
+        stmt_first = select(Lead).where(
+            Lead.organization_id == organization_id,
+            Lead.last_contacted_at.is_(None),
+            Lead.created_at <= first_response_cutoff,
+            Lead.status.in_(["new", "contacted", "qualified"]),
+            Lead.deleted_at.is_(None),
         )
         result_first = await self.session.execute(stmt_first)
         first_violations = list(result_first.scalars().all())
@@ -108,15 +105,12 @@ class SLAService:
         # Follow-up violations: leads contacted but not within threshold
         followup_cutoff = now - timedelta(minutes=config.follow_up_response_minutes)
 
-        stmt_followup = (
-            select(Lead)
-            .where(
-                Lead.organization_id == organization_id,
-                Lead.last_contacted_at.isnot(None),
-                Lead.last_contacted_at <= followup_cutoff,
-                Lead.status.in_(["contacted", "qualified", "nurture"]),
-                Lead.deleted_at.is_(None),
-            )
+        stmt_followup = select(Lead).where(
+            Lead.organization_id == organization_id,
+            Lead.last_contacted_at.isnot(None),
+            Lead.last_contacted_at <= followup_cutoff,
+            Lead.status.in_(["contacted", "qualified", "nurture"]),
+            Lead.deleted_at.is_(None),
         )
         result_followup = await self.session.execute(stmt_followup)
         followup_violations = list(result_followup.scalars().all())
@@ -125,27 +119,29 @@ class SLAService:
 
         for lead in first_violations:
             deadline = lead.created_at + timedelta(minutes=config.first_response_minutes)
-            violations.append(SLAStatus(
-                lead_id=lead.id,
-                is_violated=True,
-                violation_type="first_response",
-                minutes_overdue=int((now - deadline).total_seconds() / 60),
-                last_contact_at=None,
-                sla_deadline=deadline,
-            ))
+            violations.append(
+                SLAStatus(
+                    lead_id=lead.id,
+                    is_violated=True,
+                    violation_type="first_response",
+                    minutes_overdue=int((now - deadline).total_seconds() / 60),
+                    last_contact_at=None,
+                    sla_deadline=deadline,
+                )
+            )
 
         for lead in followup_violations:
-            deadline = lead.last_contacted_at + timedelta(
-                minutes=config.follow_up_response_minutes
+            deadline = lead.last_contacted_at + timedelta(minutes=config.follow_up_response_minutes)
+            violations.append(
+                SLAStatus(
+                    lead_id=lead.id,
+                    is_violated=True,
+                    violation_type="follow_up_response",
+                    minutes_overdue=int((now - deadline).total_seconds() / 60),
+                    last_contact_at=lead.last_contacted_at,
+                    sla_deadline=deadline,
+                )
             )
-            violations.append(SLAStatus(
-                lead_id=lead.id,
-                is_violated=True,
-                violation_type="follow_up_response",
-                minutes_overdue=int((now - deadline).total_seconds() / 60),
-                last_contact_at=lead.last_contacted_at,
-                sla_deadline=deadline,
-            ))
 
         return violations
 
@@ -160,19 +156,16 @@ class SLAService:
         reminder_window = timedelta(minutes=config.reminder_before_minutes)
 
         # Leads that will violate first response within reminder window
-        approaching_cutoff = now + reminder_window - timedelta(
-            minutes=config.first_response_minutes
+        approaching_cutoff = (
+            now + reminder_window - timedelta(minutes=config.first_response_minutes)
         )
 
-        stmt = (
-            select(Lead)
-            .where(
-                Lead.organization_id == organization_id,
-                Lead.last_contacted_at.is_(None),
-                Lead.created_at <= approaching_cutoff,
-                Lead.status.in_(["new"]),
-                Lead.deleted_at.is_(None),
-            )
+        stmt = select(Lead).where(
+            Lead.organization_id == organization_id,
+            Lead.last_contacted_at.is_(None),
+            Lead.created_at <= approaching_cutoff,
+            Lead.status.in_(["new"]),
+            Lead.deleted_at.is_(None),
         )
         result = await self.session.execute(stmt)
         approaching = list(result.scalars().all())
@@ -182,14 +175,16 @@ class SLAService:
             deadline = lead.created_at + timedelta(minutes=config.first_response_minutes)
             remaining = int((deadline - now).total_seconds() / 60)
             if remaining > 0:
-                statuses.append(SLAStatus(
-                    lead_id=lead.id,
-                    is_violated=False,
-                    violation_type=None,
-                    minutes_remaining=remaining,
-                    last_contact_at=None,
-                    sla_deadline=deadline,
-                ))
+                statuses.append(
+                    SLAStatus(
+                        lead_id=lead.id,
+                        is_violated=False,
+                        violation_type=None,
+                        minutes_remaining=remaining,
+                        last_contact_at=None,
+                        sla_deadline=deadline,
+                    )
+                )
 
         return statuses
 
@@ -214,7 +209,9 @@ class SLAService:
                 metadata={
                     "violation_type": violation.violation_type,
                     "minutes_overdue": violation.minutes_overdue,
-                    "sla_deadline": violation.sla_deadline.isoformat() if violation.sla_deadline else None,
+                    "sla_deadline": violation.sla_deadline.isoformat()
+                    if violation.sla_deadline
+                    else None,
                 },
             )
 

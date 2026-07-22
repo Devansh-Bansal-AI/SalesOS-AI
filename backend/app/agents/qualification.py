@@ -25,6 +25,7 @@ from app.prompts.qualification_v1 import (
 
 class QualificationInput(BaseModel):
     """Input to the Qualification Agent."""
+
     email: str
     first_name: str | None = None
     last_name: str | None = None
@@ -37,6 +38,7 @@ class QualificationInput(BaseModel):
 
 class QualificationOutput(BaseModel):
     """Structured output from the Qualification Agent."""
+
     score: int = Field(..., ge=0, le=100)
     priority: str = Field(..., pattern="^(critical|high|medium|low|none)$")
     intent: str = Field(
@@ -78,8 +80,7 @@ class QualificationAgent(BaseAgent[QualificationInput, QualificationOutput]):
                 additional_context += (
                     f"\n\nExisting interaction history ({len(history)} records):\n"
                     + "\n".join(
-                        f"- {h.get('type', 'unknown')}: {h.get('summary', '')}"
-                        for h in history[:5]
+                        f"- {h.get('type', 'unknown')}: {h.get('summary', '')}" for h in history[:5]
                     )
                 )
         except RuntimeError:
@@ -105,14 +106,12 @@ class QualificationAgent(BaseAgent[QualificationInput, QualificationOutput]):
 
         # Call LLM via provider abstraction
         config = LLMConfig(
-            temperature=0.2,        # Low temperature for consistency
+            temperature=0.2,  # Low temperature for consistency
             max_tokens=1024,
             response_format="json",
         )
 
-        output, response = await self.llm.generate_structured(
-            messages, QualificationOutput, config
-        )
+        output, response = await self.llm.generate_structured(messages, QualificationOutput, config)
 
         # Update agent run with LLM costs
         # (BaseAgent tracks these via the telemetry event)

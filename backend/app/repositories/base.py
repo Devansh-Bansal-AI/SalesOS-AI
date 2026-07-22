@@ -47,9 +47,7 @@ class BaseRepository(Generic[ModelType]):
         """Get a single record by ID."""
         return await self.session.get(self.model, id)
 
-    async def get_by_id_and_org(
-        self, id: UUID, organization_id: UUID
-    ) -> ModelType | None:
+    async def get_by_id_and_org(self, id: UUID, organization_id: UUID) -> ModelType | None:
         """Get a record scoped to an organization."""
         stmt = select(self.model).where(
             self.model.id == id,
@@ -111,9 +109,7 @@ class BaseRepository(Generic[ModelType]):
         await self.session.refresh(instance)
         return instance
 
-    async def soft_delete(
-        self, id: UUID, organization_id: UUID
-    ) -> bool:
+    async def soft_delete(self, id: UUID, organization_id: UUID) -> bool:
         """Soft delete a record by setting deleted_at."""
         from datetime import datetime
 
@@ -130,8 +126,10 @@ class BaseRepository(Generic[ModelType]):
 
     async def exists(self, **kwargs: Any) -> bool:
         """Check if a record matching the criteria exists."""
-        stmt = select(func.count()).select_from(self.model).where(
-            *[getattr(self.model, k) == v for k, v in kwargs.items()]
+        stmt = (
+            select(func.count())
+            .select_from(self.model)
+            .where(*[getattr(self.model, k) == v for k, v in kwargs.items()])
         )
         count = (await self.session.execute(stmt)).scalar() or 0
         return count > 0

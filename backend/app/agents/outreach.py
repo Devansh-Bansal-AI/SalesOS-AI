@@ -19,6 +19,7 @@ from app.prompts.outreach_v1 import (
 
 class OutreachInput(BaseModel):
     """Input to the Outreach Agent."""
+
     email: str
     first_name: str | None = None
     last_name: str | None = None
@@ -43,6 +44,7 @@ class OutreachInput(BaseModel):
 
 class OutreachOutput(BaseModel):
     """Generated outreach email."""
+
     subject: str = Field(..., max_length=100)
     body_text: str
     body_html: str | None = None
@@ -92,12 +94,12 @@ class OutreachAgent(BaseAgent[OutreachInput, OutreachOutput]):
             urgency=input_data.urgency or "unknown",
             industry=input_data.industry or "Unknown",
             employee_range=input_data.employee_range or "Unknown",
-            pain_points="\n".join(
-                f"- {p}" for p in input_data.pain_points
-            ) if input_data.pain_points else "Not identified",
-            conversation_starters="\n".join(
-                f"- {c}" for c in input_data.conversation_starters
-            ) if input_data.conversation_starters else "None available",
+            pain_points="\n".join(f"- {p}" for p in input_data.pain_points)
+            if input_data.pain_points
+            else "Not identified",
+            conversation_starters="\n".join(f"- {c}" for c in input_data.conversation_starters)
+            if input_data.conversation_starters
+            else "None available",
             template_type=input_data.template_type,
             additional_context=additional_context or "None",
         )
@@ -108,13 +110,11 @@ class OutreachAgent(BaseAgent[OutreachInput, OutreachOutput]):
         ]
 
         config = LLMConfig(
-            temperature=0.7,   # Higher creativity for email writing
+            temperature=0.7,  # Higher creativity for email writing
             max_tokens=1000,
             response_format="json",
         )
 
-        output, response = await self.llm.generate_structured(
-            messages, OutreachOutput, config
-        )
+        output, response = await self.llm.generate_structured(messages, OutreachOutput, config)
 
         return output

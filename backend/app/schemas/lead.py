@@ -12,6 +12,7 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 class LeadCreateRequest(BaseModel):
     """Create a new lead."""
+
     email: EmailStr
     first_name: str | None = Field(None, max_length=100)
     last_name: str | None = Field(None, max_length=100)
@@ -31,6 +32,7 @@ class LeadCreateRequest(BaseModel):
 
 class LeadUpdateRequest(BaseModel):
     """Update lead fields."""
+
     first_name: str | None = None
     last_name: str | None = None
     phone: str | None = None
@@ -48,6 +50,7 @@ class LeadUpdateRequest(BaseModel):
 
 class LeadAssignRequest(BaseModel):
     """Assign lead to a user."""
+
     user_id: UUID
 
 
@@ -56,6 +59,7 @@ class LeadAssignRequest(BaseModel):
 
 class LeadResponse(BaseModel):
     """Lead detail response."""
+
     id: UUID
     email: str
     first_name: str | None
@@ -85,6 +89,7 @@ class LeadResponse(BaseModel):
 
 class LeadListResponse(BaseModel):
     """Compact lead for list views."""
+
     id: UUID
     email: str
     first_name: str | None
@@ -106,6 +111,7 @@ class LeadListResponse(BaseModel):
 
 class QualificationResponse(BaseModel):
     """Qualification agent output."""
+
     score: int = Field(..., ge=0, le=100)
     priority: str
     intent: str
@@ -120,6 +126,7 @@ class QualificationResponse(BaseModel):
 
 class LeadFilterParams(BaseModel):
     """Query parameters for filtering leads."""
+
     status: str | None = None
     priority: str | None = None
     source: str | None = None

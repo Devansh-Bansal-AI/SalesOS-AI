@@ -282,7 +282,9 @@ async def send_outreach(ctx: WorkflowContext) -> StepResult:
         LeadUpdateRequest(status="contacted"),
     )
 
-    logger.info("outreach_queued_and_sent", lead_id=str(ctx.lead_id), email_id=str(email_response.id))
+    logger.info(
+        "outreach_queued_and_sent", lead_id=str(ctx.lead_id), email_id=str(email_response.id)
+    )
     return StepResult(
         status=StepStatus.COMPLETED,
         data={"outreach_queued": True, "email_id": str(email_response.id)},
@@ -381,7 +383,9 @@ async def schedule_meeting(ctx: WorkflowContext) -> StepResult:
         agent_run_id=agent_run.id,
     )
 
-    logger.info("meeting_queued_and_booked", lead_id=str(ctx.lead_id), meeting_id=str(meeting_response.id))
+    logger.info(
+        "meeting_queued_and_booked", lead_id=str(ctx.lead_id), meeting_id=str(meeting_response.id)
+    )
     return StepResult(
         status=StepStatus.COMPLETED,
         data={"meeting_queued": True, "meeting_id": str(meeting_response.id)},
@@ -409,6 +413,7 @@ async def add_to_watch(ctx: WorkflowContext) -> StepResult:
     if ctx.session and ctx.lead_id:
         # Log watching activity
         from app.services.crm_service import CRMService
+
         crm = CRMService(ctx.session)
         await crm.log_activity(
             ctx.organization_id,

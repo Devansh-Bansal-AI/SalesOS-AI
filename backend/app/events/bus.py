@@ -49,6 +49,7 @@ class EventCategory:
     Integration Events: External system interactions.
                         e.g., email.sent, calendar.synced, webhook.received
     """
+
     DOMAIN = "domain"
     APPLICATION = "application"
     INTEGRATION = "integration"
@@ -88,10 +89,12 @@ def on(event_type: str) -> Callable[[EventHandler], EventHandler]:
         async def handle_lead_created(event: DomainEvent, session):
             ...
     """
+
     def decorator(func: EventHandler) -> EventHandler:
         _handlers[event_type].append(func)
         logger.debug("handler_registered", event_type=event_type, handler=func.__name__)
         return func
+
     return decorator
 
 
@@ -238,9 +241,7 @@ async def get_event_history(
 
     Useful for debugging, audit trails, and event sourcing patterns.
     """
-    stmt = select(DomainEvent).where(
-        DomainEvent.organization_id == organization_id
-    )
+    stmt = select(DomainEvent).where(DomainEvent.organization_id == organization_id)
 
     if aggregate_type:
         stmt = stmt.where(DomainEvent.aggregate_type == aggregate_type)
@@ -254,4 +255,3 @@ async def get_event_history(
     stmt = stmt.order_by(DomainEvent.created_at.desc()).limit(limit)
     result = await session.execute(stmt)
     return list(result.scalars().all())
-

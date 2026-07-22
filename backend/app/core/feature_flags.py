@@ -39,7 +39,6 @@ DEFAULT_FLAGS: dict[str, dict[str, Any]] = {
         "enabled": True,
         "description": "Cache LLM responses in Redis for identical inputs",
     },
-
     # Agent Features
     "enrichment_agent": {
         "enabled": True,
@@ -53,7 +52,6 @@ DEFAULT_FLAGS: dict[str, dict[str, Any]] = {
         "enabled": False,
         "description": "Enable experimental agent capabilities",
     },
-
     # Decision Engine
     "llm_fallback_decisions": {
         "enabled": True,
@@ -67,7 +65,6 @@ DEFAULT_FLAGS: dict[str, dict[str, Any]] = {
         "enabled": True,
         "description": "Automatically disqualify low-score leads",
     },
-
     # Communication
     "email_sending": {
         "enabled": True,
@@ -77,7 +74,6 @@ DEFAULT_FLAGS: dict[str, dict[str, Any]] = {
         "enabled": True,
         "description": "Automated follow-up email sequences",
     },
-
     # Platform
     "audit_logging": {
         "enabled": True,
@@ -139,9 +135,7 @@ class FeatureFlags:
         logger.warning("unknown_feature_flag", flag=flag_name)
         return False
 
-    async def _check_redis(
-        self, flag_name: str, organization_id: str | None
-    ) -> bool | None:
+    async def _check_redis(self, flag_name: str, organization_id: str | None) -> bool | None:
         """Check Redis for runtime flag override."""
         from app.db.redis import get_redis
 
@@ -235,17 +229,23 @@ def require_feature(flag_name: str):
         async def search_knowledge_base(...):
             ...
     """
+
     def decorator(func: Callable) -> Callable:
         @wraps(func)
         async def wrapper(*args: Any, **kwargs: Any) -> Any:
             flags = get_feature_flags()
             org_id = kwargs.get("organization_id")
-            if not await flags.is_enabled(flag_name, organization_id=str(org_id) if org_id else None):
+            if not await flags.is_enabled(
+                flag_name, organization_id=str(org_id) if org_id else None
+            ):
                 from app.core.exceptions import SalesOSError
+
                 raise SalesOSError(
                     message=f"Feature '{flag_name}' is not enabled",
                     code="FEATURE_DISABLED",
                 )
             return await func(*args, **kwargs)
+
         return wrapper
+
     return decorator

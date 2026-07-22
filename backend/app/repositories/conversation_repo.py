@@ -44,9 +44,7 @@ class ConversationRepository(BaseRepository[Conversation]):
     ) -> tuple[list[Conversation], int]:
         """List all conversations for a lead."""
         filters = [Conversation.lead_id == lead_id]
-        items, total = await self.list(
-            organization_id, offset=offset, limit=limit, filters=filters
-        )
+        items, total = await self.list(organization_id, offset=offset, limit=limit, filters=filters)
         return list(items), total
 
     async def get_with_messages(

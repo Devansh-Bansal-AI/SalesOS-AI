@@ -113,9 +113,7 @@ class EscalationService:
 
         # Multiple competitor mentions → escalate
         if len(competitor_mentions) >= 2:
-            reasons.append(
-                f"Multiple competitors mentioned: {', '.join(competitor_mentions[:3])}"
-            )
+            reasons.append(f"Multiple competitors mentioned: {', '.join(competitor_mentions[:3])}")
 
         if not reasons:
             return False
