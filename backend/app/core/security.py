@@ -174,6 +174,7 @@ PERMISSIONS: dict[str, set[str]] = {
         "audit:read",
         "org:update",
         "decisions:override",
+        "dashboard:read",
     },
     Role.MANAGER: {
         "leads:create",
@@ -198,6 +199,7 @@ PERMISSIONS: dict[str, set[str]] = {
         "users:read",
         "audit:read",
         "decisions:override",
+        "dashboard:read",
     },
     Role.SALES_REP: {
         "leads:create",
@@ -215,6 +217,7 @@ PERMISSIONS: dict[str, set[str]] = {
         "meetings:update",
         "analytics:read",
         "decisions:override",
+        "dashboard:read",
     },
     Role.VIEWER: {
         "leads:read",
@@ -224,6 +227,7 @@ PERMISSIONS: dict[str, set[str]] = {
         "meetings:read",
         "analytics:read",
         "agents:read",
+        "dashboard:read",
     },
 }
 

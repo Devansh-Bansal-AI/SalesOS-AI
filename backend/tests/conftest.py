@@ -4,19 +4,15 @@
 
 import asyncio
 from collections.abc import AsyncGenerator
+from unittest.mock import AsyncMock
 
 import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import get_settings
-from app.db.base import Base
-from app.db.session import get_db
 from app.main import app
-
-# Use a test database
-TEST_DATABASE_URL = "sqlite+aiosqlite:///./test.db"
 
 
 @pytest.fixture(scope="session")
@@ -37,19 +33,21 @@ async def async_client() -> AsyncGenerator[AsyncClient, None]:
 
 @pytest_asyncio.fixture
 async def db_session() -> AsyncGenerator[AsyncSession, None]:
-    """Database session for tests."""
-    from unittest.mock import AsyncMock
+    """Mock database session for integration tests.
 
-    try:
-        engine = create_async_engine(TEST_DATABASE_URL, echo=False)
-        async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
-        session_factory = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
-        async with session_factory() as session:
-            yield session
-        async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.drop_all)
-        await engine.dispose()
-    except Exception:
-        mock_session = AsyncMock(spec=AsyncSession)
-        yield mock_session
+    The schema uses PostgreSQL-specific types (JSONB, ARRAY) that cannot
+    be rendered by SQLite. Tests that need a db_session receive an
+    explicitly-mocked AsyncSession. This is intentional and documented —
+    these tests validate API routing, serialization, and auth logic,
+    not raw SQL execution.
+
+    For tests that exercise actual SQL queries, use a real PostgreSQL
+    test database (see conftest_pg.py or run via docker-compose).
+    """
+    mock_session = AsyncMock(spec=AsyncSession)
+    # Provide reasonable defaults for common operations
+    mock_session.commit = AsyncMock()
+    mock_session.flush = AsyncMock()
+    mock_session.rollback = AsyncMock()
+    mock_session.close = AsyncMock()
+    yield mock_session

@@ -156,7 +156,8 @@ class CopilotService:
             )
             body_text = resp.content
 
-            body_html = f"<p>{body_text.replace('\n', '<br/>')}</p>"
+            body_html_content = body_text.replace('\n', '<br/>')
+            body_html = f"<p>{body_html_content}</p>"
 
             return EmailDraftResponse(
                 subject=subject,
@@ -173,10 +174,11 @@ class CopilotService:
                 "SalesOS AI helps teams automate lead qualification and booking with 24/7 AI SDRs.\n\n"
                 "Would you be open to a quick 10-minute demo this Thursday?\n\nBest,\nSalesOps Team"
             )
+            body_html_content = body.replace('\n\n', '</p><p>')
             return EmailDraftResponse(
                 subject=subject,
                 body_text=body,
-                body_html=f"<p>{body.replace('\n\n', '</p><p>')}</p>",
+                body_html=f"<p>{body_html_content}</p>",
                 reasoning="Fallback standard SDR cold outreach draft",
             )
 

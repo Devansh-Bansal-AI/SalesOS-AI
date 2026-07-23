@@ -250,9 +250,11 @@ class DashboardService:
             qualified_leads=qualified_leads,
             overall_conversion_rate=overall_conv_rate,
             meetings_booked=meetings_booked,
-            estimated_won_revenue=float(converted_leads * 15000.0),
-            estimated_lost_revenue=float(counts.get("disqualified", 0) * 5000.0),
-            sla_health_percentage=96.5,
+            # TODO: Compute from actual deal values stored on Lead/Opportunity
+            estimated_won_revenue=0.0,
+            estimated_lost_revenue=0.0,
+            # TODO: Compute from real SLA instrumentation
+            sla_health_percentage=0.0,
         )
 
     async def get_pipeline_analytics(
@@ -309,13 +311,8 @@ class DashboardService:
                 "overall": round((converted / total) * 100, 1),
             },
             avg_qualification_score=round(float(avg_score), 1),
-            stage_velocity_days={
-                "new": 0.5,
-                "enriched": 0.8,
-                "qualified": 1.2,
-                "contacted": 3.5,
-                "meeting_booked": 4.0,
-            },
+            # TODO: Compute from actual avg time-in-stage per lead
+            stage_velocity_days={},
         )
 
     async def get_agent_analytics(
@@ -388,13 +385,24 @@ class DashboardService:
         *,
         days: int = 30,
     ):
-        """Get SLA compliance and response metrics."""
+        """Get SLA compliance and response metrics.
+
+        NOTE: Currently returns placeholder values — real SLA tracking
+        requires instrumented first-response timestamps and configured
+        SLA thresholds per organization. See FIX-003 in the audit.
+        """
         from app.schemas.analytics import SLAAnalyticsResponse
+
+        # TODO: Implement real SLA computation from lead timestamps
+        # - first_response_avg_minutes: diff between lead.created_at and first activity/email
+        # - compliance_percentage: % of leads responded to within SLA threshold
+        # - total_violations: count of leads exceeding SLA threshold
+        # - escalations_count: count from escalation_service records
 
         return SLAAnalyticsResponse(
             timeframe_days=days,
-            total_violations=2,
-            first_response_avg_minutes=14.5,
-            compliance_percentage=96.5,
-            escalations_count=1,
+            total_violations=0,
+            first_response_avg_minutes=0.0,
+            compliance_percentage=0.0,
+            escalations_count=0,
         )

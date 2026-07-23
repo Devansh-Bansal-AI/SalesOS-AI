@@ -35,7 +35,7 @@ export default function CopilotSidePanel() {
     setLoading(true);
 
     try {
-      const res = await api.post('/copilot/query', { prompt: query });
+      const res = await api.queryCopilot(query);
       const data = res.data || {};
       setMessages((prev) => [
         ...prev,
@@ -63,7 +63,7 @@ export default function CopilotSidePanel() {
     setLoading(true);
     try {
       // Mock or fetch first lead for demo
-      const leadsRes = await api.get('/leads?per_page=1');
+      const leadsRes = await api.getLeads({ per_page: 1 });
       const leads = leadsRes.data || [];
       const leadId = leads[0]?.id;
 
@@ -75,11 +75,7 @@ export default function CopilotSidePanel() {
         return;
       }
 
-      const res = await api.post('/copilot/draft-email', {
-        lead_id: leadId,
-        tone: draftTone,
-        max_length: 'medium',
-      });
+      const res = await api.draftEmail(leadId, draftTone);
       setDraftResult(res.data);
     } catch (err) {
       setDraftResult({

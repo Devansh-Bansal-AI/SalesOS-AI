@@ -11,6 +11,12 @@ from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
+_INSECURE_SECRET_DEFAULTS = {
+    "change-me-to-a-random-64-char-string",
+    "change-me-to-another-random-64-char-string",
+}
+
+
 class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
 
@@ -20,6 +26,37 @@ class Settings(BaseSettings):
         case_sensitive=False,
         extra="ignore",
     )
+
+    def validate_secrets(self) -> None:
+        """Validate that secret keys are not using default placeholder values.
+
+        In production/staging: raises RuntimeError (fail-safe).
+        In development: prints a prominent warning to stderr.
+        """
+        import sys
+        import warnings
+
+        insecure = []
+        if self.SECRET_KEY in _INSECURE_SECRET_DEFAULTS:
+            insecure.append("SECRET_KEY")
+        if self.JWT_SECRET_KEY in _INSECURE_SECRET_DEFAULTS:
+            insecure.append("JWT_SECRET_KEY")
+
+        if not insecure:
+            return
+
+        msg = (
+            f"SECURITY: {', '.join(insecure)} using default placeholder values. "
+            f"Generate proper secrets: python -c \"import secrets; print(secrets.token_urlsafe(64))\""
+        )
+
+        if self.APP_ENV in ("production", "staging"):
+            raise RuntimeError(msg)
+        else:
+            print(f"\n{'='*70}", file=sys.stderr)
+            print(f"⚠️  WARNING: {msg}", file=sys.stderr)
+            print(f"{'='*70}\n", file=sys.stderr)
+            warnings.warn(msg, stacklevel=2)
 
     # ── Application ─────────────────────────────────────────
     APP_NAME: str = "SalesOS AI"

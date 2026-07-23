@@ -195,6 +195,14 @@ export const api = {
     request('GET', '/dashboard/conversion', { params }),
   getRepPerformance: (params) =>
     request('GET', '/dashboard/reps', { params }),
+
+  // Copilot
+  queryCopilot: (prompt, leadId) =>
+    request('POST', '/copilot/query', { body: { prompt, lead_id: leadId } }),
+  draftEmail: (leadId, tone, instructions) =>
+    request('POST', '/copilot/draft-email', { body: { lead_id: leadId, tone, instructions } }),
+  getDealPrep: (leadId) =>
+    request('GET', `/copilot/deal-prep/${leadId}`),
 };
 
 export { ApiError };

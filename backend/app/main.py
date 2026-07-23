@@ -25,6 +25,7 @@ from app.core.logging import get_logger, setup_logging
 from app.db.redis import close_redis
 from app.db.session import close_db
 from app.middleware.logging import LoggingMiddleware
+from app.middleware.rate_limit import RateLimitMiddleware
 from app.middleware.request_id import RequestIDMiddleware
 from app.schemas.common import ErrorDetail, ErrorResponse
 
@@ -38,6 +39,9 @@ logger = get_logger("app")
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Application startup and shutdown lifecycle."""
     settings = get_settings()
+
+    # Fail-safe: block startup if secrets are insecure in prod/staging
+    settings.validate_secrets()
 
     # Startup
     setup_logging()
@@ -127,6 +131,7 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
     app.add_middleware(RequestIDMiddleware)
+    app.add_middleware(RateLimitMiddleware)
     app.add_middleware(LoggingMiddleware)
 
     # ── Exception Handlers ──────────────────────────────
